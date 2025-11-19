@@ -82,6 +82,8 @@ the file tree
 cd
 python dataset_proceed.py
 python train.py
+
+python infer.py
 ```
 
 ​	The users are probably change the path.
