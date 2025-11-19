@@ -5,7 +5,7 @@ from PIL import Image
 from utils.hex2rgb import hex_to_rgb
 import jittor as jt
 import jittor.transform as transform
-from models import get_model  # 引入你已有的模型结构定义
+from models import get_model
 from tqdm import trange
 from utils.csv2dict import csv_to_dict
 
