@@ -1,0 +1,41 @@
+import json
+import csv
+from utils.hex2rgb import hex_to_rgb
+from utils.hex2hsv import hex_to_hsv
+
+def json_to_csv(json_file, csv_file):
+    # 读取 JSON 文件
+    with open(json_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # 准备 CSV 数据
+    csv_rows = []
+    num_id = 0
+
+    for brand in data['brands']:
+        brand_name = brand['name']
+        for series in brand['series']:
+            series_name = series['name']
+            for lipstick in series['lipsticks']:
+                color_hex = lipstick['color']
+                r, g, b = hex_to_rgb(color_hex)
+                h, s, v = hex_to_hsv(color_hex)
+                csv_rows.append([
+                    num_id, 
+                    brand_name,
+                    series_name,
+                    lipstick['id'],
+                    lipstick['name'],
+                    color_hex,
+                    r, g, b, h, s, v
+                ])
+                num_id = num_id + 1
+
+    # 写入 CSV 文件
+    csv_headers = ['num_id', 'brands', 'series', 'id', 'names', 'HEX', 'R', 'G', 'B', 'H', 'S', 'V']
+    with open(csv_file, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.writer(f)
+        writer.writerow(csv_headers)
+        writer.writerows(csv_rows)
+
+    print("CSV file is created.")
