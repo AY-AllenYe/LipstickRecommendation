@@ -1,4 +1,3 @@
-# Welcome to GitHub Desktop!
 # Lipstick-Recommendation
 **AY-AllenYe @ HDU**
 
