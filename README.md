@@ -9,9 +9,9 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 
 ### Goals (v1.0)
 
-1.Datasets have been processed.
-2.Clusters have been determined.
-3.Classification has simply done.
+    1.Datasets have been processed.
+    2.Clusters have been determined.
+    3.Classification has simply done.
 
 ### Explanation
 
@@ -56,23 +56,24 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 ```
 the file tree
 |-- main
-    |-- dataset.py
     |-- dataset_proceed.py
     |-- kmeans.py
-    |-- models.py
     |-- infer.py
     |-- train.py
+    |-- README.md
     |-- datasets
     |   |-- lipstick.json
-    |-- models
-    |-- output
     |-- utils
     |   |-- csv2dict.py
     |   |-- hex2hsv.py
     |   |-- hex2rgb.py
     |   |-- json2csv.py
     |   |-- logger.py
-    |   |-- weights.py
+    |   |-- compute_weights.py
+    |   |-- load_dataset.py
+    |   |-- models.py
+    |-- models
+    |-- output
 ```
 
 ### Bash
