@@ -72,8 +72,6 @@ the file tree
     |   |-- compute_weights.py
     |   |-- load_dataset.py
     |   |-- models.py
-    |-- models
-    |-- output
 ```
 
 ### Bash

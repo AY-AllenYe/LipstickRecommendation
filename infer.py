@@ -16,6 +16,8 @@ model_path = "models/best_train_acc_model.pkl"
 # model_path = "models/best_train_loss_model.pkl"
 num_classes = 5
 output_dir = "output"
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir, exist_ok=True)
 output_txt = os.path.join(output_dir, "result.txt")
 
 # ===== Load Model =====

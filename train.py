@@ -7,6 +7,7 @@ from jittor.dataset import DataLoader
 from tqdm import trange
 import sys
 import datetime
+import os
 from utils.logger import Logger
 
 # jt.flags.use_cuda = 1
@@ -16,6 +17,12 @@ sys.stdout = Logger()
 BATCH_SIZE = 68
 NUM_CLASSES = 5
 EPOCHS = 80
+model_save_path = 'models'
+if not os.path.exists(model_save_path):
+    os.makedirs(model_save_path, exist_ok=True)
+best_train_acc_path = os.path.join(model_save_path, 'best_train_acc_model.pkl')
+best_train_loss_path = os.path.join(model_save_path, 'best_train_loss_model.pkl')
+
 
 train_set = LipstickDataset(
     image_dir='datasets/TrainSet/images',
@@ -81,12 +88,12 @@ for epoch in trange(EPOCHS):
     if train_acc > best_train_acc:
         best_train_acc = train_acc
         best_train_acc_num = epoch
-        jt.save(model.state_dict(), f"models/best_train_acc_model.pkl")
+        jt.save(model.state_dict(), best_train_acc_path)
         # print(f"New best model saved at epoch {epoch}, acc={acc:.4f}")
     if train_loss < best_train_loss:
         best_train_loss = train_loss
         best_train_loss_num = epoch
-        jt.save(model.state_dict(), f"models/best_train_loss_model.pkl")
+        jt.save(model.state_dict(), best_train_loss_path)
         # print(f"New best model saved at epoch {epoch}, acc={acc:.4f}")
     # jt.save(model.state_dict(), f"model_save/model_{epoch}.pkl")
 
