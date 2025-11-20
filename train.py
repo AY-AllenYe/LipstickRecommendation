@@ -1,7 +1,7 @@
 import jittor as jt
 from utils.load_dataset import LipstickDataset, get_transforms
-from models import get_model
-from utils.weights import compute_class_weights
+from utils.models import get_model
+from utils.compute_weights import compute_class_weights
 from jittor import nn
 from jittor.dataset import DataLoader
 from tqdm import trange
