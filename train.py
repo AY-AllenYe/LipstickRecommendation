@@ -11,7 +11,6 @@ from utils.logger import Logger
 
 # jt.flags.use_cuda = 1
 
-# 重定向标准输出
 sys.stdout = Logger()
 
 BATCH_SIZE = 68

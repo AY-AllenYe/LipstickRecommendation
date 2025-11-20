@@ -18,19 +18,19 @@ num_classes = 5
 output_dir = "output"
 output_txt = os.path.join(output_dir, "result.txt")
 
-# ===== 加载模型 =====
+# ===== Load Model =====
 model = get_model(num_classes=num_classes)
 model.load_state_dict(jt.load(model_path))
 model.eval()
 
-# ===== 图像预处理 =====
+# ===== Pre-process Image(s) =====
 test_transform = transform.Compose([
     # transform.Resize((224, 224)),
     # transform.ImageNormalize(mean=[0.5], std=[0.5]),
     transform.ToTensor()
 ])
 
-# ===== 推理 =====
+# ===== Inference =====
 mode = -1
 print("mode = 0 => Single color")
 print("mode = 1 => Batch colors")
@@ -41,7 +41,6 @@ if mode == '0':   # Single color
     test_color_hex = input("input HEX color:(without #)")
     r, g, b = hex_to_rgb(test_color_hex)
         
-    # 创建纯色图像, 保存为 JPG
     img = Image.new('RGB', (100, 100), (r, g, b))
     img_filename = f'{test_color_hex}.jpg'
     img.save(os.path.join(output_dir, img_filename))
@@ -65,7 +64,6 @@ elif mode == '1': # Batch colors
         img = Image.open(img_path).convert("RGB")
         img = test_transform(img)
         
-        # 正确方式：添加 batch 维度
         img = jt.array(img)[None, ...]  # shape: [1, 3, 224, 224]
 
         pred = model(img)
@@ -75,7 +73,6 @@ elif mode == '1': # Batch colors
         
     print(results)
     
-    # ===== 写入 TXT 文件 =====
     with open(output_txt, "w") as f:
         for line in results:
             f.write(line + "\n")
