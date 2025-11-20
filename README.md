@@ -97,14 +97,11 @@ and others.
 ```
 
 ### TODO
-1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
-2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
-3.Re-determine the Cluster by new-updated datasets.
-4.Find more proper and intelligent algorithm of classification.
-5.Find mor accurate models or nets to train.
-6.UI and repository.
-
-
-This is your README. READMEs are where you can communicate what your project is and how to use it.
-
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+    1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
+    2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
+    3.Re-determine the Cluster by new-updated datasets.
+    4.Find more proper and intelligent algorithm of classification.
+    5.Find mor accurate models or nets to train.
+    6.UI and repository, which can easily interact.
+    7.Function: Recommend other items in same cluster, list its information or online shopping website.
+    8.Function(Maybe): Virtual dress-on if input real-time video of human face. 
