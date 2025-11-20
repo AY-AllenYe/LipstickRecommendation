@@ -1,5 +1,5 @@
 import jittor as jt
-from dataset import LipstickDataset, get_transforms
+from utils.load_dataset import LipstickDataset, get_transforms
 from models import get_model
 from utils.weights import compute_class_weights
 from jittor import nn
