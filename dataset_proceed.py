@@ -1,5 +1,6 @@
 import os
 from utils.json2csv import json_to_csv
+from utils.cluster import cluster_kmeans
 import sys
 import datetime
 import pandas as pd
@@ -9,12 +10,24 @@ from utils.logger import Logger
 
 sys.stdout = Logger()
 
-json_file = 'datasets/lipstick.json'
-csv_origin_file = 'datasets/lipstick.csv'
-csv_cluster_file = 'datasets/lipstick_clusters.csv'
+dataset_dir = 'datasets'
 
-color2jpg_images_dir = 'datasets/TrainSet/images'
-color2jpg_labels_dir = 'datasets/TrainSet/labels'
+json_file = os.path.join(dataset_dir, 'lipstick.json')
+csv_origin_file = os.path.join(dataset_dir, 'lipstick.csv')
+csv_cluster_file = os.path.join(dataset_dir, 'lipstick_clusters.csv')
+csv_cluster_dict_file = os.path.join(dataset_dir, 'dict.csv')
+
+train_dir = os.path.join(dataset_dir, 'TrainSet')
+os.makedirs(train_dir, exist_ok=True)
+color2jpg_images_dir = os.path.join(train_dir, 'images')
+color2jpg_labels_dir = os.path.join(train_dir, 'labels')
+os.makedirs(color2jpg_images_dir, exist_ok=True)
+os.makedirs(color2jpg_labels_dir, exist_ok=True)
+label_file_path = os.path.join(color2jpg_labels_dir, 'trainval.txt')
+train_label_file_path = os.path.join(color2jpg_labels_dir, 'train.txt')
+val_label_file_path = os.path.join(color2jpg_labels_dir, 'val.txt')
+
+TrainSet_percent = 0.95
 
 if not os.path.exists(csv_origin_file):
     json_to_csv(json_file, csv_origin_file)
@@ -22,7 +35,7 @@ else:
     print("Original CSV file has been already created.")
     
 if not os.path.exists(csv_cluster_file):
-    import kmeans
+    cluster_kmeans(csv_origin_file, csv_cluster_file, csv_cluster_dict_file)
     # json_to_csv(json_file, csv_origin_file)
     
 else:
@@ -30,14 +43,6 @@ else:
 
 df = pd.read_csv(csv_cluster_file)
 
-os.makedirs(color2jpg_images_dir, exist_ok=True)
-os.makedirs(color2jpg_labels_dir, exist_ok=True)
-
-label_file_path = os.path.join(color2jpg_labels_dir, 'trainval.txt')
-
-train_percent = 0.95
-train_label_file_path = os.path.join(color2jpg_labels_dir, 'train.txt')
-val_label_file_path = os.path.join(color2jpg_labels_dir, 'val.txt')
 
 with open(label_file_path, 'w', encoding='utf-8') as label_file:
     for _, row in df.iterrows():
@@ -56,7 +61,7 @@ with open(label_file_path, 'w', encoding='utf-8') as label_file:
 
 with open(label_file_path, 'r', encoding='utf-8') as label_file:
     lines = label_file.readlines()
-    split_param = int(len(lines) * train_percent)
+    split_param = int(len(lines) * TrainSet_percent)
 
     lines_train = lines[:split_param]
     lines_val = lines[split_param:]

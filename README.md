@@ -5,6 +5,17 @@ Wish this project helps you. And your Star is really helpful.
 
 This projects is aiming to provide several similar lipsticks (mainly in colors) with the user updates.
 
+## 2025.11.19 version 1.1
+
+### Goals (v1.1)
+
+    1.Optimize the file tree structure (Move and Rename several files)
+    2.Fix bugs
+
+### TODO (v1.1)
+    
+    Same as TODO (v1.0)
+
 ## 2025.11.19 version 1.0
 
 ### Goals (v1.0)
