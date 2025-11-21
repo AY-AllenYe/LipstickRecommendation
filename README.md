@@ -66,6 +66,7 @@ the file tree
     |   |-- load_dataset.py
     |   |-- logger.py
     |   |-- models.py
+    |   |-- recommend.py
 ```
 
 ### Bash
@@ -89,6 +90,17 @@ and others.
 ```
 
 ### Updated Logs
+
+#### 2025.11.21 version 1.2
+
+**Goals (v1.2)**
+
+    1.Function: Recommend other items in same cluster.
+    2.Fix bugs
+
+**TODO (v1.2)**
+    
+    Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
 
 #### 2025.11.20 version 1.1
 

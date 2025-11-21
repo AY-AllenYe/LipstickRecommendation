@@ -8,8 +8,14 @@ import jittor.transform as transform
 from utils.models import get_model
 from tqdm import trange
 from utils.csv2dict import csv_to_dict
+from utils.recommend import recommendation
+import sys
+from utils.logger import Logger
+
+sys.stdout = Logger()
 
 cluster_dict_file = 'datasets/dict.csv'
+cluster_file = 'datasets/lipstick_clusters.csv'
 lipstick_dict = csv_to_dict(cluster_dict_file)
 
 model_path = "models/best_train_acc_model.pkl"
@@ -33,14 +39,13 @@ test_transform = transform.Compose([
 ])
 
 # ===== Inference =====
-mode = -1
+mode_samples = -1
 print("mode = 0 => Single color")
 print("mode = 1 => Batch colors")
-mode = input("enter the mode:")
-# mode = int(input("enter the mode:"))
+mode_samples = input("enter the mode:\n")
 
-if mode == '0':   # Single color
-    test_color_hex = input("input HEX color:(without #)")
+if mode_samples == '0':   # Single color
+    test_color_hex = input("input HEX color:(without #)\n")
     r, g, b = hex_to_rgb(test_color_hex)
         
     img = Image.new('RGB', (100, 100), (r, g, b))
@@ -52,9 +57,18 @@ if mode == '0':   # Single color
     pred = model(img)
     pred_label = int(jt.argmax(pred, dim=1)[0].item())
     print(f"Color {test_color_hex} goes to cluster {pred_label}, named {lipstick_dict[str(pred_label)]}")
-
     
-elif mode == '1': # Batch colors
+    mode_rec = input("Do you need recommendation? Enter Y or N\n")
+    if mode_rec == 'y' or 'Y':
+        mode_rec_num = int(input("How many do you want to recommend?\n"))
+        recommendation(cluster_file, pred_label, mode_rec_num)
+    elif mode_rec =='n' or 'N':
+        exit()
+    else:
+        print("please enter Y/N!")
+        
+    
+elif mode_samples == '1': # Batch colors
     test_dir = "datasets/TestSetA/images/test"
     
     results = []
@@ -80,5 +94,5 @@ elif mode == '1': # Batch colors
             f.write(line + "\n")
     
 else:
-    print("please choose mode in 0 or 1!")
+    print("please choose mode_samples in 0 or 1!")
     exit()
