@@ -110,6 +110,7 @@ and others.
     3.Classification has simply done.
 
 **TODO (v1.0)**
+
     1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
     2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
     3.Re-determine the Cluster by new-updated datasets.
