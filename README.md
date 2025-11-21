@@ -88,26 +88,28 @@ numpy == 1.26.4       (In my machine these 2 wheels is tested related.)
 and others.
 ```
 
-### 2025.11.20 version 1.1
+### Updated Logs
 
-#### Goals (v1.1)
+#### 2025.11.20 version 1.1
+
+**Goals (v1.1)**
 
     1.Optimize the file tree structure (Move and Rename several files)
     2.Fix bugs
 
-#### TODO (v1.1)
+**TODO (v1.1)**
     
     Same as TODO (v1.0)
 
-### 2025.11.19 version 1.0
+#### 2025.11.19 version 1.0
 
-#### Goals (v1.0)
+**Goals (v1.0)**
 
     1.Datasets have been processed.
     2.Clusters have been determined.
     3.Classification has simply done.
 
-#### TODO (v1.0)
+**TODO (v1.0)**
     1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
     2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
     3.Re-determine the Cluster by new-updated datasets.
