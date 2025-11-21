@@ -51,20 +51,20 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 the file tree
 |-- main
     |-- dataset_proceed.py
-    |-- kmeans.py
     |-- infer.py
     |-- train.py
     |-- README.md
     |-- datasets
     |   |-- lipstick.json
     |-- utils
+    |   |-- cluster.py
+    |   |-- compute_weights.py
     |   |-- csv2dict.py
     |   |-- hex2hsv.py
     |   |-- hex2rgb.py
     |   |-- json2csv.py
-    |   |-- logger.py
-    |   |-- compute_weights.py
     |   |-- load_dataset.py
+    |   |-- logger.py
     |   |-- models.py
 ```
 
