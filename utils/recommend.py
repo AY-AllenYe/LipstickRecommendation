@@ -13,8 +13,6 @@ def recommendation(cluster_file, pred_cluster_label, rec_samples, random_seed=42
     actual_samples = min(rec_samples, len(cluster_data))
     # sampled_data = cluster_data.sample(n=actual_samples, random_state=random_seed)
     
-    
-    
     cluster_data_reset = cluster_data.reset_index(drop=True)
     available_indices = list(range(len(cluster_data_reset)))
     selected_indices = []
