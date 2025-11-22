@@ -50,23 +50,23 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 ```
 the file tree
 |-- main
-    |-- dataset_proceed.py
-    |-- infer.py
-    |-- train.py
+    |-- dataset_proceed.py              // Proceed JSON and create CSV/JPG file.
+    |-- infer.py                        // Use model to predict and recommend.
+    |-- train.py                        // Use CSV/JPG to train model.
     |-- README.md
     |-- datasets
-    |   |-- lipstick.json
+    |   |-- lipstick.json               // Original JSON dataset.
     |-- utils
-    |   |-- cluster.py
-    |   |-- compute_weights.py
+    |   |-- cluster.py                  // Best K for K-Means and cluster
+    |   |-- compute_weights.py          // Training weights.
     |   |-- csv2dict.py
     |   |-- hex2hsv.py
     |   |-- hex2rgb.py
     |   |-- json2csv.py
-    |   |-- load_dataset.py
-    |   |-- logger.py
-    |   |-- models.py
-    |   |-- recommend.py
+    |   |-- load_dataset.py             // Loading datasets For training
+    |   |-- logger.py                   // Record and Report (Auto).
+    |   |-- models.py                   // ResNet50.
+    |   |-- recommend.py                // Randomly from repository.
 ```
 
 ### Bash
