@@ -83,6 +83,8 @@ python infer.py
 
 ### Dependency
 
+​	In my machine these wheels is tested related. Among them, jittor needs paired numpy (the newest update of jittor may report error). Thus it's strongly suggested install the same version of jittor and numpy. Others can install as default.
+
 ```
 jittor == 1.3.8.5
 numpy == 1.26.4
@@ -90,7 +92,6 @@ PIL == 12.0.0
 pandas == 2.3.3 
 tqdm == 4.67.1
 sklearn == 1.7.2
-(In my machine these wheels is tested related.)
 and others.
 ```
 
@@ -104,7 +105,7 @@ and others.
     2.Fix bugs
 
 **TODO (v1.2)**
-    
+
     Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
 
 #### 2025.11.20 version 1.1
@@ -115,7 +116,7 @@ and others.
     2.Fix bugs
 
 **TODO (v1.1)**
-    
+
     Same as TODO (v1.0)
 
 #### 2025.11.19 version 1.0
