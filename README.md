@@ -85,7 +85,12 @@ python infer.py
 
 ```
 jittor == 1.3.8.5
-numpy == 1.26.4       (In my machine these 2 wheels is tested related.)
+numpy == 1.26.4
+PIL == 12.0.0
+pandas == 2.3.3 
+tqdm == 4.67.1
+sklearn == 1.7.2
+(In my machine these wheels is tested related.)
 and others.
 ```
 
