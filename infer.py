@@ -1,4 +1,4 @@
-# pred.py
+# infer.py
 
 import os
 from PIL import Image
