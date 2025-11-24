@@ -1,4 +1,3 @@
-# Welcome to GitHub Desktop!
 # Lipstick-Recommendation
 **AY-AllenYe @ HDU**
 
@@ -6,19 +5,13 @@ Wish this project helps you. And your Star is really helpful.
 
 This projects is aiming to provide several similar lipsticks (mainly in colors) with the user updates.
 
-## 2025.11.19 version 1.0
-
-### Goals (v1.0)
-
-1.Datasets have been processed.
-2.Clusters have been determined.
-3.Classification has simply done.
+## version 1.x
 
 ### Explanation
 
 **1.Dataset**
 
-​	I searched from Github and got 288 items of a JSON file '\datasets\\lipstick.json' which includes attributes of 288 different lipsticks. The JSON file shows the attributes of every items such as brands, series, names, ids, and the most important one, the HEX colors. 
+​	I searched from Github and got 288 items of a JSON file [lipstick.json](./datasets/lipstick.json) which includes attributes of 288 different lipsticks. The JSON file shows the attributes of every items such as brands, series, names, ids, and the most important one, the HEX colors. 
 
 ​	I programmed some python files to processed the HEX color, convert the HEX color to RGB, HSV, then I create a CSV file to store information the JSON file shows and the attributes I processed. Also, I made 288 JPG solid color images by the HEX value.
 
@@ -57,23 +50,23 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 ```
 the file tree
 |-- main
-    |-- dataset.py
-    |-- dataset_proceed.py
-    |-- kmeans.py
-    |-- models.py
-    |-- infer.py
-    |-- train.py
+    |-- dataset_proceed.py              // Proceed JSON and create CSV/JPG file.
+    |-- infer.py                        // Use model to predict and recommend.
+    |-- train.py                        // Use CSV/JPG to train model.
+    |-- README.md
     |-- datasets
-    |   |-- lipstick.json
-    |-- models
-    |-- output
+    |   |-- lipstick.json               // Original JSON dataset.
     |-- utils
+    |   |-- cluster.py                  // Best K for K-Means and cluster
+    |   |-- compute_weights.py          // Training weights.
     |   |-- csv2dict.py
     |   |-- hex2hsv.py
     |   |-- hex2rgb.py
     |   |-- json2csv.py
-    |   |-- logger.py
-    |   |-- weights.py
+    |   |-- load_dataset.py             // Loading datasets For training
+    |   |-- logger.py                   // Record and Report (Auto).
+    |   |-- models.py                   // ResNet50.
+    |   |-- recommend.py                // Randomly from repository.
 ```
 
 ### Bash
@@ -90,21 +83,57 @@ python infer.py
 
 ### Dependency
 
+​	In my machine these wheels is tested related. Among them, jittor needs paired numpy (the newest update of jittor may report error). Thus it's strongly suggested install the same version of jittor and numpy. Others can install as default.
+
 ```
 jittor == 1.3.8.5
-numpy == 1.26.4       (In my machine these 2 wheels is tested related.)
+numpy == 1.26.4
+PIL == 12.0.0
+pandas == 2.3.3 
+tqdm == 4.67.1
+sklearn == 1.7.2
 and others.
 ```
 
-### TODO
-1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
-2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
-3.Re-determine the Cluster by new-updated datasets.
-4.Find more proper and intelligent algorithm of classification.
-5.Find mor accurate models or nets to train.
-6.UI and repository.
+### Updated Logs
 
+#### 2025.11.21 version 1.2
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+**Goals (v1.2)**
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+    1.Function: Recommend other items in same cluster.
+    2.Fix bugs
+
+**TODO (v1.2)**
+
+    Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
+
+#### 2025.11.20 version 1.1
+
+**Goals (v1.1)**
+
+    1.Optimize the file tree structure (Move and Rename several files)
+    2.Fix bugs
+
+**TODO (v1.1)**
+
+    Same as TODO (v1.0)
+
+#### 2025.11.19 version 1.0
+
+**Goals (v1.0)**
+
+    1.Datasets have been processed.
+    2.Clusters have been determined.
+    3.Classification has simply done.
+
+**TODO (v1.0)**
+
+    1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
+    2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
+    3.Re-determine the Cluster by new-updated datasets.
+    4.Find more proper and intelligent algorithm of classification.
+    5.Find mor accurate models or nets to train.
+    6.UI and repository, which can easily interact.
+    7.Function: Recommend other items in same cluster, list its information or online shopping website.
+    8.Function(Maybe): Virtual dress-on if input real-time video of human face. 
