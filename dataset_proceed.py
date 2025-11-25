@@ -1,3 +1,9 @@
+# dataset_proceed.py
+
+### input: HEX
+### Future work: input image to fetch HEX automatically.
+
+
 import os
 from utils.json2csv import json_to_csv
 from utils.cluster import cluster_kmeans
