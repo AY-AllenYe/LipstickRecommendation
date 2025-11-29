@@ -121,7 +121,7 @@ dlib == 20.0.0
 
 **TODO (v1.2)**
 
-    Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
+    1.Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
 
 #### 2025.11.20 version 1.1
 
