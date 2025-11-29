@@ -17,7 +17,7 @@ sys.stdout = Logger()
 BATCH_SIZE = 68
 NUM_CLASSES = 5
 EPOCHS = 80
-model_save_path = 'models'
+model_save_path = 'models/saves'
 if not os.path.exists(model_save_path):
     os.makedirs(model_save_path, exist_ok=True)
 best_train_acc_path = os.path.join(model_save_path, 'best_train_acc_model.pkl')
