@@ -100,6 +100,18 @@ dlib == 20.0.0
 
 ### Updated Logs
 
+#### 2025.11.29 version 1.3
+
+**Goals (v1.3)**
+
+    1.Add python file 'videocapture.py' to catch real-time video for facial detection in the future.
+    2.Function(Not done yet): Catch real-time video for facial detection to get the color of user's lips.
+
+**TODO (v1.3)**
+
+    1.Optimize the code 'videocapture.py' to identify where and what color the lips are.
+    2.Translation the python file mentioned above from Chinese to English.
+
 #### 2025.11.21 version 1.2
 
 **Goals (v1.2)**
