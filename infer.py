@@ -18,8 +18,8 @@ cluster_dict_file = 'datasets/dict.csv'
 cluster_file = 'datasets/lipstick_clusters.csv'
 lipstick_dict = csv_to_dict(cluster_dict_file)
 
-model_path = "models/best_train_acc_model.pkl"
-# model_path = "models/best_train_loss_model.pkl"
+model_path = "models/saves/best_train_acc_model.pkl"
+# model_path = "models/saves/best_train_loss_model.pkl"
 num_classes = 5
 output_dir = "output"
 if not os.path.exists(output_dir):
