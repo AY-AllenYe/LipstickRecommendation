@@ -92,10 +92,8 @@ PIL == 12.0.0
 pandas == 2.3.3 
 tqdm == 4.67.1
 sklearn == 1.7.2
-and others.
-
-(version2.0：)
 dlib == 20.0.0
+and others.
 ```
 
 ### Updated Logs
