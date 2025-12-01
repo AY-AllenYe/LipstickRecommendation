@@ -100,49 +100,60 @@ dlib == 20.0.0
 
 ### Updated Logs
 
-#### 2025.11.29 version 1.3
+#### 2025.12.1 version 1.2.1
 
-**Goals (v1.3)**
+**Goals (v1.2.1)**
+
+    1.Translated python file 'videocapture.py' into ENG.
+    2.Designed to detect the whole face but only show the lips (Other parts of face maybe used in the future).
+
+**TODO (v1.2.1)**
+
+    1.Use the deteced real-time videos or images to get the color of user's lips and do the recommendation or replace by the recommendated colors.
+
+#### 2025.11.29 version 1.2.0
+
+**Goals (v1.2.0)**
 
     1.Add python file 'videocapture.py' to catch real-time video for facial detection in the future.
     2.Function(Not done yet): Catch real-time video for facial detection to get the color of user's lips.
 
-**TODO (v1.3)**
+**TODO (v1.2.0)**
 
     1.Optimize the code 'videocapture.py' to identify where and what color the lips are.
     2.Translation the python file mentioned above from Chinese to English.
 
-#### 2025.11.21 version 1.2
+#### 2025.11.21 version 1.1.0
 
-**Goals (v1.2)**
+**Goals (v1.1.0)**
 
     1.Function: Recommend other items in same cluster.
     2.Fix bugs
 
-**TODO (v1.2)**
+**TODO (v1.1.0)**
 
     1.Same as TODO (v1.0) except '7.Function: Recommend other items in same cluster, list its information or online shopping website.', which is 70% done.
 
-#### 2025.11.20 version 1.1
+#### 2025.11.20 version 1.0.1
 
-**Goals (v1.1)**
+**Goals (v1.0.1)**
 
     1.Optimize the file tree structure (Move and Rename several files)
     2.Fix bugs
 
-**TODO (v1.1)**
+**TODO (v1.0.1)**
 
     Same as TODO (v1.0)
 
-#### 2025.11.19 version 1.0
+#### 2025.11.19 version 1.0.0
 
-**Goals (v1.0)**
+**Goals (v1.0.0)**
 
     1.Datasets have been processed.
     2.Clusters have been determined.
     3.Classification has simply done.
 
-**TODO (v1.0)**
+**TODO (v1.0.0)**
 
     1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
     2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
