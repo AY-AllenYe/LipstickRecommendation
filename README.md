@@ -161,3 +161,4 @@ and others.
     6.UI and repository, which can easily interact.
     7.Function: Recommend other items in same cluster, list its information or online shopping website.
     8.Function(Maybe): Virtual dress-on if input real-time video of human face. 
+    
