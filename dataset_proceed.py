@@ -1,6 +1,6 @@
 # dataset_proceed.py
 
-### input: HEX
+### input: HEX color
 ### Future work: input image to fetch HEX automatically.
 
 
