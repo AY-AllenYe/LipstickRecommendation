@@ -100,6 +100,10 @@ and others.
 
 ### Updated Logs
 
+#### version 1.3.0
+
+**HAVEN'T DONE YET**
+
 #### 2025.12.1 version 1.2.1
 
 **Goals (v1.2.1)**
