@@ -50,9 +50,11 @@ This projects is aiming to provide several similar lipsticks (mainly in colors) 
 ```
 the file tree
 |-- main
+    |-- App.py                          // UI.
     |-- dataset_proceed.py              // Proceed JSON and create CSV/JPG file.
     |-- infer.py                        // Use model to predict and recommend.
     |-- train.py                        // Use CSV/JPG to train model.
+    |-- videocapture.py                 // Dlib to the video capture.
     |-- README.md
     |-- datasets
     |   |-- lipstick.json               // Original JSON dataset.
