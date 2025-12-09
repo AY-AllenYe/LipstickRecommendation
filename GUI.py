@@ -1,7 +1,7 @@
 # Input: 
 #   1.HEX(fetch by the color plate or RGB (adjusted by movable switches) and show the color real-time)
 #   2.Image(recommendation the lip's mean color, Not Done Yet)
-#   3.Video_capture(Same as Image, Not Done Yet)
+#   3.launch_video_capture(Same as Image, Not Done Yet)
 # Need: 
 #   1.Btn*1(OpenImage...); SmallBtn*2(Left-Rotation?, Right-Rotation?)  ***
 #   2.Btn*1(OpenCapture(On/Off)?)                                       *
@@ -36,7 +36,7 @@
 
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
+from tkinter import font, filedialog, messagebox, scrolledtext
 # from tkinter.simpledialog import askinteger
 from PIL import Image, ImageTk
 import os
@@ -54,36 +54,32 @@ class App:
 
         self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
         self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.25, relheight=0.1)
-
-        self.right_rotate_button = tk.Button(master, text="↷", command=self.right_rotate)
+        
+        self.custom_font = font.Font(size=20, weight="bold")
+        
+        self.right_rotate_button = tk.Button(master, text="↷", command=self.left_rotate, font=self.custom_font)
         self.right_rotate_button.place(relx=0.05, rely=0.2, relwidth=0.1, relheight=0.1)
         
-        self.left_rotate_button = tk.Button(master, text="↶", command=self.left_rotate)
+        self.left_rotate_button = tk.Button(master, text="↶", command=self.right_rotate, font=self.custom_font)
         self.left_rotate_button.place(relx=0.25, rely=0.2, relwidth=0.1, relheight=0.1)
         
-        self.video_capture_button = tk.Button(master, text="打开摄像头", command=self.video_capture)
-        self.video_capture_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
+        self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
+        self.launch_video_capture_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
 
-        # self.video_capture_button = tk.Button(master, text="提取色彩", command=self.)
-        # self.video_capture_button = tk.Button(master, text="调整色彩", command=self.)
-            # self.video_capture_button = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.video_capture_button = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.video_capture_button = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-        # self.video_capture_button = tk.Button(master, text="复原色彩", command=self.)
+        self.fetch_color_button = tk.Button(master, text="提取色彩", command=self.fetch_color)
+        self.adjust_color_button = tk.Button(master, text="调整色彩", command=self.adjust_color)
 
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
         self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
 
-        self.recognize_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
-        self.recognize_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
-        
-        # self.recognize_button = tk.Button(master, text="重新识别", command=self.)  已存在，在recommendation函数里。
+        self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
+        self.recommendation_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
         
         self.inference_logs = tk.Label(master, text="图片位置")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
         
         # self.recommemdation_list = scrolledtext.ScrolledText(master, wrap=tk.WORD)
-        # self.display_info_button = tk.Button(master, text="展示商品信息", command=self.)
+        self.display_info_button = tk.Button(master, text="展示商品信息", command=self.display_info)
         # self.goods_image_label = tk.Label(self.master)
         # self.result_labels = scrolledtext.ScrolledText(master, wrap=tk.WORD)
 
@@ -116,7 +112,7 @@ class App:
                     max_size = max(width, height)
                     new_width = int(width * 500 / max_size)
                     new_height = int(height * 500 / max_size)
-                    image = image.resize((new_width, new_height), Image.ANTIALIAS)
+                    image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
                 self.original_image = image
                 photo = ImageTk.PhotoImage(image)
                 self.image_label.configure(image=photo)
@@ -143,33 +139,27 @@ class App:
             photo = ImageTk.PhotoImage(rotated_image)
             self.image_label.configure(image=photo)
             self.image_label.image = photo
-
-    def recommendation(self):
-        return 
-        pygame.mixer.music.stop()
-        self.inference_logs.delete(1.0, tk.END)
-        self.music_path = None
-        self.music_statu = 0  # 0 - 播放，1 - 暂停
-        self.picture_label_predict = -1
-        self.music_recommend_list = []
-        App.update_playing_button(self)
-        
-        self.current_song = 0
-        if self.picture_path:
-            self.picture_label_predict = bp.recognize_picture("file:///" + self.picture_path)
-            if self.picture_label_predict == 1:
-                # result_str = "\n".join("happy")
-                self.inference_logs.insert(tk.END, "图片是 轻快 的\n" + "\n")
-            if self.picture_label_predict == 0:
-                # result_str = "\n".join("quiet")
-                self.inference_logs.insert(tk.END, "图片是 宁静 的\n" + "\n")
-            self.music_recommend_list = bp.recommend_Music(self.picture_label_predict, self.max_recommend_numbers)
-            result_str = "\n".join(self.music_recommend_list)
-            self.inference_logs.insert(tk.END, "        推荐歌曲: 共计 " + str(self.max_recommend_numbers) + " 首\n" + result_str + "\n")
-            
-            self.recognize_button = tk.Button(self.master, text="重新生成推荐清单\n（停止音乐）", command=self.recommendation)
-            self.recognize_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
-
+    
+    def launch_video_capture(self):
+        return
+    
+    def fetch_color(self):
+        return
+    
+    def adjust_color(self):
+            # self.adjust_color_R_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            # self.adjust_color_G_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            # self.adjust_color_B_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+        # self.recover_color_button = tk.Button(master, text="复原色彩", command=self.recover_color)
+        # self.comfirm_color_button = tk.Button(master, text="确认色彩", command=self.comfirm_color)
+        return
+    
+    def recover_color(self):
+        return
+    
+    def comfirm_color(self):
+        return
+    
     def setting_max_recommend_numbers(self, input):
         self.max_recommend_numbers = input
         return
@@ -205,75 +195,42 @@ class App:
         button.pack(pady=5)
         entry.focus_set()  # 将焦点设置在输入框上
         custom_window.mainloop()
-        
-    def update_playing_button(self):
-        if self.picture_label_predict != -1:
-            if self.music_statu == 0:
-                self.video_capture_button = tk.Button(self.master, text="暂停" + "\n当前 正播放：" + str(self.music_recommend_list[self.current_song]), command=self.video_capture)
-                self.video_capture_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
-            elif self.music_statu == 1:
-                self.video_capture_button = tk.Button(self.master, text="播放\n当前 已暂停播放", command=self.video_capture)
-                self.video_capture_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
-            
-            self.last_song_button = tk.Button(self.master, text="播放上一首" + "\n上一首：" + str(self.music_recommend_list[(self.current_song + self.max_recommend_numbers - 1) % self.max_recommend_numbers]), command=self.last_song)
-            self.last_song_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
-            
-            self.virtual_try_on_button = tk.Button(self.master, text="播放下一首" + "\n下一首：" + str(self.music_recommend_list[(self.current_song + 1) % self.max_recommend_numbers]), command=self.virtual_try_on)
-            self.virtual_try_on_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
-        else:
-            self.video_capture_button = tk.Button(self.master, text="播放音乐", command=self.video_capture)
-            self.video_capture_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
-            
-            self.last_song_button = tk.Button(self.master, text="播放上一首", command=self.last_song)
-            self.last_song_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
-            
-            self.virtual_try_on_button = tk.Button(self.master, text="播放下一首", command=self.virtual_try_on)
-            self.virtual_try_on_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
-        
-    def video_capture(self):
-        # file_path = filedialog.askopenfilename(filetypes=[("MIDI files", "*.mid")])
-        if not self.music_path and self.picture_label_predict != -1:
-            self.music_path = self.music_library_path + self.music_recommend_list[self.current_song] + '.mid'
-            if not os.path.isfile(self.music_path):
-                self.music_path = self.music_library_path + self.music_recommend_list[self.current_song] + '.MID'
-            if not os.path.isfile(self.music_path):
-                self.music_path = self.music_library_path + self.music_recommend_list[self.current_song] + '.wav'
-            if not os.path.isfile(self.music_path):
-                self.music_path = self.music_library_path + self.music_recommend_list[self.current_song] + '.WAV'
-            if not os.path.isfile(self.music_path):
-                self.music_path = self.music_library_path + self.music_recommend_list[self.current_song] + '.mp3'
-            try:
-                pygame.mixer.music.load(self.music_path)
-                pygame.mixer.music.play()
-                App.update_playing_button(self)
-            except Exception as e:
-                messagebox.showerror("Error", f"无法播放音乐：{e}")
-        elif self.music_path:
-            App.pause_song(self)
-            App.update_playing_button(self)
-                
-    def pause_song(self):
-        self.music_statu =  (self.music_statu + 1) % 2
-        if self.music_statu == 1:
-            pygame.mixer.music.pause()
-        else:
-            pygame.mixer.music.unpause()
-        
-    def last_song(self):
-        pygame.mixer.music.stop()
-        self.music_path = None
-        self.music_statu = 0
-        self.current_song = (self.current_song + self.max_recommend_numbers - 1) % self.max_recommend_numbers
-        App.video_capture(self)
-                        
-    def virtual_try_on(self):
-        pygame.mixer.music.stop()
-        self.music_path = None
-        self.music_statu = 0
-        self.current_song = (self.current_song + 1) % self.max_recommend_numbers
-        App.video_capture(self)
     
+    def recommendation(self):
+        # self.recognize_button = tk.Button(master, text="重新识别", command=self.)
+        return 
+        pygame.mixer.music.stop()
+        self.inference_logs.delete(1.0, tk.END)
+        self.music_path = None
+        self.music_statu = 0  # 0 - 播放，1 - 暂停
+        self.picture_label_predict = -1
+        self.music_recommend_list = []
+        App.update_playing_button(self)
+        
+        self.current_song = 0
+        if self.picture_path:
+            self.picture_label_predict = bp.recognize_picture("file:///" + self.picture_path)
+            if self.picture_label_predict == 1:
+                # result_str = "\n".join("happy")
+                self.inference_logs.insert(tk.END, "图片是 轻快 的\n" + "\n")
+            if self.picture_label_predict == 0:
+                # result_str = "\n".join("quiet")
+                self.inference_logs.insert(tk.END, "图片是 宁静 的\n" + "\n")
+            self.music_recommend_list = bp.recommend_Music(self.picture_label_predict, self.max_recommend_numbers)
+            result_str = "\n".join(self.music_recommend_list)
+            self.inference_logs.insert(tk.END, "        推荐歌曲: 共计 " + str(self.max_recommend_numbers) + " 首\n" + result_str + "\n")
+            
+            self.recognize_button = tk.Button(self.master, text="重新生成推荐清单\n（停止音乐）", command=self.recommendation)
+            self.recognize_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+
+    def display_info(self):
+        return
+
+    def virtual_try_on(self):
+        return
+
     def clear_text(self):
+        return
         pygame.mixer.music.stop()
         self.image_label.place_forget()
         self.inference_logs.delete(1.0, tk.END)
