@@ -100,9 +100,18 @@ and others.
 
 ### Updated Logs
 
-#### version 1.3.0
+#### 2025.12.9 version 1.3.1
 
-**HAVEN'T DONE YET**
+**Goals (v1.3.1)**
+
+    1.GUI foundation framework.
+    2.Two Functions in GUI: Open picture and Roatation.
+
+#### 2025.12.7 version 1.3.0
+
+**Goals (v1.3.0)**
+
+    1.GUI foundation framework.
 
 #### 2025.12.1 version 1.2.1
 
