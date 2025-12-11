@@ -3,19 +3,21 @@ import dlib
 import numpy as np
 from collections import OrderedDict
 
-# Loading models
-detector = dlib.get_frontal_face_detector()
-criticPoints = dlib.shape_predictor("models\pretrained\shape_predictor_68_face_landmarks.dat")
+## Loading models
+def LoadModels(model_path):
+    detector = dlib.get_frontal_face_detector()
+    criticPoints = dlib.shape_predictor(model_path)
 
-shape_predictor_68_face_landmark=OrderedDict([
-    ('mouth',(48,68)),
-    ('right_eyebrow',(17,22)),
-    ('left_eye_brow',(22,27)),
-    ('right_eye',(36,42)),
-    ('left_eye',(42,48)),
-    ('nose',(27,36)),
-    ('jaw',(0,17))
-])
+    shape_predictor_68_face_landmark=OrderedDict([
+        ('mouth',(48,68)),
+        ('right_eyebrow',(17,22)),
+        ('left_eye_brow',(22,27)),
+        ('right_eye',(36,42)),
+        ('left_eye',(42,48)),
+        ('nose',(27,36)),
+        ('jaw',(0,17))
+    ])
+    return detector, criticPoints, shape_predictor_68_face_landmark
 
 # Draw rectangle box to the whole face
 def drawRectangle(detected,frame):
@@ -94,6 +96,8 @@ def detect_time(organ_range=None):
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
+    model_path = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
+    detector, criticPoints, shape_predictor_68_face_landmark = LoadModels(model_path)
     mouth_range = shape_predictor_68_face_landmark['mouth']
     # signal_detect()
     detect_time(mouth_range)
