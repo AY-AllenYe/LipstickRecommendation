@@ -43,6 +43,11 @@ import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1" # Settings: No Welcome Message from pygame.
 import pygame
 
+import cv2
+import dlib
+import numpy as np
+from collections import OrderedDict
+
 class App:
     def __init__(self, master):
         self.master = master
@@ -55,7 +60,7 @@ class App:
         self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
         self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.25, relheight=0.1)
         
-        self.custom_font = font.Font(size=20, weight="bold")
+        self.custom_font = font.Font(size=20, weight="bold") ## 修改字体与大小（需调用）
         
         self.right_rotate_button = tk.Button(master, text="↷", command=self.left_rotate, font=self.custom_font)
         self.right_rotate_button.place(relx=0.05, rely=0.2, relwidth=0.1, relheight=0.1)
@@ -95,6 +100,7 @@ class App:
 
         self.cluster_file = 'datasets/lipstick_clusters.csv'
         self.rotate_angle = 0
+        self.video_capture_landmarks = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
         self.lipstick_label_predict = -1  # -1 未识别
         self.lipstick_recommend_list = []
         self.max_recommend_numbers = 10
@@ -141,6 +147,18 @@ class App:
             self.image_label.image = photo
     
     def launch_video_capture(self):
+        detector = dlib.get_frontal_face_detector()
+        criticPoints = dlib.shape_predictor(self.video_capture_landmarks)
+
+        shape_predictor_68_face_landmark=OrderedDict([
+            ('mouth',(48,68)),
+            ('right_eyebrow',(17,22)),
+            ('left_eye_brow',(22,27)),
+            ('right_eye',(36,42)),
+            ('left_eye',(42,48)),
+            ('nose',(27,36)),
+            ('jaw',(0,17))
+        ])
         return
     
     def fetch_color(self):
