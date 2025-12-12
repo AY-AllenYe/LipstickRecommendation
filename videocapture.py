@@ -79,10 +79,11 @@ def detect_time(detector, criticPoints, landmarks, organ_range=None):
         frame = drawCriticPoints(detected, frame, criticPoints, landmarks, organ_range)
         cv2.imshow('frame', frame)
         key=cv2.waitKey(1)
-        if key==27:
+        if key == 27:
             break
     cap.release()
     cv2.destroyAllWindows()
+    return
 
 # if __name__ == '__main__':
 #     model_path = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
