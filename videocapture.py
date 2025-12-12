@@ -8,7 +8,7 @@ def LoadModels(model_path):
     detector = dlib.get_frontal_face_detector()
     criticPoints = dlib.shape_predictor(model_path)
 
-    shape_predictor_68_face_landmark=OrderedDict([
+    landmarks=OrderedDict([
         ('mouth',(48,68)),
         ('right_eyebrow',(17,22)),
         ('left_eye_brow',(22,27)),
@@ -17,10 +17,10 @@ def LoadModels(model_path):
         ('nose',(27,36)),
         ('jaw',(0,17))
     ])
-    return detector, criticPoints, shape_predictor_68_face_landmark
+    return detector, criticPoints, landmarks
 
 # Draw rectangle box to the whole face
-def drawRectangle(detected,frame):
+def drawRectangle(detected, frame, criticPoints, organ_range):
     margin = 0.2
     img_h,img_w,_=np.shape(frame)
     if len(detected) > 0:
@@ -51,7 +51,7 @@ def predict2Np(predict):
     return dims
 
 # Research from the rectangle box and draw facial landmarks
-def drawCriticPoints(detected,frame,organ_range=None):
+def drawCriticPoints(detected, frame, criticPoints, landmarks, organ_range=None):
     for (step,locate) in enumerate(detected):
         # 68 2D coordinates
         dims=criticPoints(frame,locate)
@@ -59,7 +59,7 @@ def drawCriticPoints(detected,frame,organ_range=None):
         dims=predict2Np(dims)
 
         # (i,j) means range, which can refer to the dictory. The mouth goes to (48,68)
-        for (name,(i,j)) in shape_predictor_68_face_landmark.items():
+        for (name,(i,j)) in landmarks.items():
             # Search for the parts of face and point out, otherwise not to display
             if organ_range is not None and (i,j) != organ_range:
                 break
@@ -69,25 +69,14 @@ def drawCriticPoints(detected,frame,organ_range=None):
                            radius=2,color=(0,255,0),thickness=-1)
     return frame
 
-
-# Single image
-def signal_detect(img_path='images/face1.jpg'):
-    img=cv2.imread(img_path)
-    detected=detector(img)
-    frame=drawRectangle(detected,img)
-    frame = drawCriticPoints(detected, img)
-    cv2.imshow('frame',frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
 # Real-time video capture
-def detect_time(organ_range=None):
+def detect_time(detector, criticPoints, landmarks, organ_range=None):
     cap=cv2.VideoCapture(0)
     while cap.isOpened():
         ret,frame=cap.read()
         detected = detector(frame)
-        frame = drawRectangle(detected, frame)
-        frame=drawCriticPoints(detected,frame, organ_range)
+        frame = drawRectangle(detected, frame, criticPoints, organ_range)
+        frame = drawCriticPoints(detected, frame, criticPoints, landmarks, organ_range)
         cv2.imshow('frame', frame)
         key=cv2.waitKey(1)
         if key==27:
@@ -95,9 +84,9 @@ def detect_time(organ_range=None):
     cap.release()
     cv2.destroyAllWindows()
 
-if __name__ == '__main__':
-    model_path = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
-    detector, criticPoints, shape_predictor_68_face_landmark = LoadModels(model_path)
-    mouth_range = shape_predictor_68_face_landmark['mouth']
-    # signal_detect()
-    detect_time(mouth_range)
+# if __name__ == '__main__':
+#     model_path = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
+#     detector, criticPoints, landmarks = LoadModels(model_path)
+#     mouth_range = landmarks['mouth']
+#     # signal_detect()
+#     detect_time(detector, criticPoints, mouth_range)
