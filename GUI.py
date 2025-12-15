@@ -1,12 +1,12 @@
 # Input: 
-#   1.HEX(fetch by the color plate or RGB (adjusted by movable switches) and show the color real-time)
+#   1.HEX(fetch by the color plate or RGB (modified by movable switches) and show the color real-time)
 #   2.Image(recommendation the lip's mean color, Not Done Yet)
 #   3.launch_video_capture(Same as Image, Not Done Yet)
 # Need: 
 #   1.Btn*1(OpenImage...); SmallBtn*2(Left-Rotation?, Right-Rotation?)  ***
 #   2.Btn*1(OpenCapture(On/Off)?)                                       *
-#   3.Btn*3(FetchColor(and show)?, AdjustColor..., Return?)             ***
-#   4.MoveableBtn*3(AdjustColor - R,G,B)                                ***
+#   3.Btn*3(FetchColor(and show)?, ModifyColor..., Return?)             ***
+#   4.MoveableBtn*3(ModifyColor - R,G,B)                                ***
 #   5.Widge*1(Image/Capture)                                            *
 #   6.PhotoDisplay*1(color)                                             TODO
 
@@ -78,10 +78,11 @@ class App:
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.video_label.pack()
 
-        self.display_fetched_color_button = tk.Button(master, text="提取色彩", command=self.display_fetched_color)
+        self.display_fetched_color_button = tk.Button(master, text="提取原图色彩", command=self.display_fetched_color)
         self.display_fetched_color_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
 
-        self.adjust_color_button = tk.Button(master, text="调整色彩", command=self.adjust_color)
+        self.modify_color_button = tk.Button(master, text="调整色彩", command=self.modify_color)
+        self.display_fetched_color_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
 
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
         self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
@@ -124,6 +125,9 @@ class App:
             ('nose',(27,36)),
             ('jaw',(0,17))
         ])
+        self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
+        self.set_fetched_bool = False # false 未提取， true 已提取
+        self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
         self.recommendation_tag = -1
     
     def open_image(self):
@@ -228,24 +232,31 @@ class App:
         self.after(100, self.video_update)
     
     def display_fetched_color(self):
-        fetched_R = 0
-        fetched_G = 0
-        fetched_B = 0
+        self.fetched_R = 255
+        self.fetched_G = 255
+        self.fetched_B = 2
         self.fetched_color_image = tk.Label(self.master)
         self.fetched_color_image.place(relx=0.05, rely=0.85)
         
-        pure_color_image = Image.new('RGB', (100, 100), (fetched_R, fetched_G, fetched_B))
+        pure_color_image = Image.new('RGB', (100, 100), (self.fetched_R, self.fetched_G, self.fetched_B))
         
         photo = ImageTk.PhotoImage(pure_color_image)
         self.fetched_color_image.configure(image=photo)
         self.fetched_color_image.image = photo
+        
+        self.set_fetched_bool = True
         return
     
-    def adjust_color(self):
-        
-            # self.adjust_color_R_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.adjust_color_G_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.adjust_color_B_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+    def modify_color(self):
+        if not self.set_fetched_bool:
+            messagebox.showinfo("Info", "请先提取色彩！")
+            return
+        else:
+            self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+
+            # self.modify_color_R_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            # self.modify_color_G_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            # self.modify_color_B_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
         
         # self.recover_color_button = tk.Button(master, text="复原色彩", command=self.recover_color)
         # self.comfirm_color_button = tk.Button(master, text="确认色彩", command=self.comfirm_color)
@@ -256,11 +267,7 @@ class App:
     
     def comfirm_color(self):
         return
-    
-    def setting_max_recommend_numbers(self, input):
-        self.max_recommend_numbers = input
-        return
-    
+        
     def setting_recommend_numbers(self):# Create a custom TopLevel window
         # self.max_recommend_numbers = askinteger(title = "请输入希望推荐的歌曲数目（一个整数）", prompt = "歌曲数目:", initialvalue = 10)
         custom_window = tk.Toplevel(root)
@@ -277,7 +284,7 @@ class App:
             try:
                 result = int(entry_var.get())
                 # print("你期望推荐 " + str(result) + " 首歌")
-                App.setting_max_recommend_numbers(self, input = result)
+                self.max_recommend_numbers = result
                 messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 首歌")
                 self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 首", command=self.setting_recommend_numbers)
                 self.setting_recommend_numbers_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
@@ -285,6 +292,7 @@ class App:
                 result = self.max_recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 首歌")
             custom_window.destroy()
+        
         button = tk.Button(custom_window, text="确认修改", command=get_integer)
         button.pack(pady=5)
         entry.focus_set()  # 将焦点设置在输入框上
