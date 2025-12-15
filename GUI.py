@@ -28,11 +28,13 @@
 #   5.Btn*1(Application on real-time capture(On/Off)?)                  *
 
 # Others:
-#   1.Clear
+#   1.Clear canvas
 #   2.Quit
+#   3.Clear history
 # Need:
-#   1.Btn*1(Clear?)                                                     *
+#   1.Btn*1(ClearCanvas?)                                               *
 #   2.Btn*1(Quit?)                                                      *
+#   3.Btn*1(ClearHistory?)                                              *
 
 
 import tkinter as tk
@@ -52,10 +54,10 @@ import videocapture
 class App:
     def __init__(self, master):
         self.master = master
-        master.title("image2music")
-        master.geometry("1000x800")
+        master.title("LipstickRecommendation")
+        master.geometry("1200x800")
 
-        self.image_label = tk.Label(master, text="图片位置")
+        self.image_label = tk.Label(master, text="图片打开位置")
         self.image_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
 
         self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
@@ -72,7 +74,7 @@ class App:
         self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
         self.launch_video_capture_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
         
-        self.video_label = tk.Label(master, text="图片位置")
+        self.video_label = tk.Label(master, text="摄像头打开位置")
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.video_label.pack()
 
@@ -85,7 +87,7 @@ class App:
         self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
         self.recommendation_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
         
-        self.inference_logs = tk.Label(master, text="图片位置")
+        self.inference_logs = tk.Label(master, text="推荐日志")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
         
         # self.recommemdation_list = scrolledtext.ScrolledText(master, wrap=tk.WORD)
@@ -224,6 +226,10 @@ class App:
         self.after(100, self.video_update)
     
     def fetch_color(self):
+        r = 0
+        g = 0
+        b = 0
+        
         return
     
     def adjust_color(self):
