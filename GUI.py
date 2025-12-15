@@ -34,7 +34,7 @@
 # Need:
 #   1.Btn*1(ClearCanvas?)                                               *
 #   2.Btn*1(Quit?)                                                      *
-#   3.Btn*1(ClearHistory?)                                              *
+#   3.Btn*1(ClearHistory?)                                              TODO
 
 
 import tkinter as tk
@@ -55,40 +55,40 @@ class App:
     def __init__(self, master):
         self.master = master
         master.title("LipstickRecommendation")
-        master.geometry("1200x800")
+        master.geometry("800x800")
+
+        self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
+        self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.2, relheight=0.1)
 
         self.image_label = tk.Label(master, text="图片打开位置")
         self.image_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
-
-        self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
-        self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.25, relheight=0.1)
         
         self.custom_font = font.Font(size=20, weight="bold") ## 修改字体与大小（需调用）
         
         self.right_rotate_button = tk.Button(master, text="↷", command=self.left_rotate, font=self.custom_font)
-        self.right_rotate_button.place(relx=0.05, rely=0.2, relwidth=0.1, relheight=0.1)
+        self.right_rotate_button.place(relx=0.25, rely=0.05, relwidth=0.05, relheight=0.05)
         
         self.left_rotate_button = tk.Button(master, text="↶", command=self.right_rotate, font=self.custom_font)
-        self.left_rotate_button.place(relx=0.25, rely=0.2, relwidth=0.1, relheight=0.1)
+        self.left_rotate_button.place(relx=0.25, rely=0.1, relwidth=0.05, relheight=0.05)
         
         self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
-        self.launch_video_capture_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
+        self.launch_video_capture_button.place(relx=0.05, rely=0.2, relwidth=0.25, relheight=0.1)
         
         self.video_label = tk.Label(master, text="摄像头打开位置")
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.video_label.pack()
 
         self.display_fetched_color_button = tk.Button(master, text="提取原图色彩", command=self.display_fetched_color)
-        self.display_fetched_color_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
+        self.display_fetched_color_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
 
         self.modify_color_button = tk.Button(master, text="调整色彩", command=self.modify_color)
-        self.display_fetched_color_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
+        self.modify_color_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
 
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
         self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
 
         self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
-        self.recommendation_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
         
         self.inference_logs = tk.Label(master, text="推荐日志")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
@@ -98,7 +98,7 @@ class App:
         # self.goods_image_label = tk.Label(self.master)
         # self.result_labels = scrolledtext.ScrolledText(master, wrap=tk.WORD)
 
-        self.virtual_try_on_button = tk.Button(master, text="试装？", command=self.virtual_try_on)
+        self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
         self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
                 
         self.clear_text_button = tk.Button(master, text="清空推荐列表", command=self.clear_text)
