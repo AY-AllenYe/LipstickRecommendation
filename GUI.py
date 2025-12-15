@@ -126,7 +126,9 @@ class App:
             ('jaw',(0,17))
         ])
         self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
+        self.modified_R, self.modified_G, self.modified_B = 0, 0, 0
         self.set_fetched_bool = False # false 未提取， true 已提取
+        self.set_modified_bool = False # false 未修改， true 已修改
         self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
         self.recommendation_tag = -1
     
@@ -253,20 +255,85 @@ class App:
             return
         else:
             self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+            custom_window = tk.Toplevel(root)
+            custom_window.title("希望推荐的歌曲数目")
+            custom_window.geometry("400x400+400+400")  # 宽x高+水平偏移量+垂直偏移量
+            
+            self.fetched_color_image = tk.Label(custom_window)
+            self.fetched_color_image.place(relx=0.05, rely=0.05)
+            pure_color_image = Image.new('RGB', (80, 80), (self.fetched_R, self.fetched_G, self.fetched_B))
+            photo = ImageTk.PhotoImage(pure_color_image)
+            self.fetched_color_image.configure(image=photo)
+            self.fetched_color_image.image = photo
+            
+            self.modified_color_image = tk.Label(custom_window)
+            self.modified_color_image.place(relx=0.65, rely=0.05)
+            
+            self.modify_color_R_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            self.modify_color_R_scale.place(relx=0.05, rely=0.3, relwidth=0.8, relheight=0.1)
+            self.modify_color_R_scale.set(self.modified_R)
+            
+            self.modify_color_G_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            self.modify_color_G_scale.place(relx=0.05, rely=0.4, relwidth=0.8, relheight=0.1)
+            self.modify_color_G_scale.set(self.modified_G)
+            
+            self.modify_color_B_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+            self.modify_color_B_scale.place(relx=0.05, rely=0.5, relwidth=0.8, relheight=0.1)
+            self.modify_color_B_scale.set(self.modified_B)
+            
+            def recover_color():
+                self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+                self.modify_color_R_scale.set(self.modified_R)
+                self.modify_color_G_scale.set(self.modified_G)
+                self.modify_color_B_scale.set(self.modified_B)
+            
+            def comfirm_color():
+                self.modified_R = self.modify_color_R_scale.get()
+                self.modified_G = self.modify_color_G_scale.get()
+                self.modified_B = self.modify_color_B_scale.get()
 
-            # self.modify_color_R_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.modify_color_G_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            # self.modify_color_B_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-        
-        # self.recover_color_button = tk.Button(master, text="复原色彩", command=self.recover_color)
-        # self.comfirm_color_button = tk.Button(master, text="确认色彩", command=self.comfirm_color)
-        return
-    
-    def recover_color(self):
-        return
-    
-    def comfirm_color(self):
-        return
+                self.modified_color_image = tk.Label(self.master)
+                self.modified_color_image.place(relx=0.25, rely=0.85)
+                pure_modified_color_image = Image.new('RGB', (100, 100), (self.modified_R, self.modified_G, self.modified_B))
+                modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
+                self.modified_color_image.configure(image=modified_photo)
+                self.modified_color_image.image = modified_photo
+                
+                messagebox.showinfo("Info", "修改成功！")
+                custom_window.destroy()
+            
+            self.recover_color_button = tk.Button(custom_window, text="复原色彩", command=recover_color)
+            self.recover_color_button.place(relx=0.05, rely=0.7, relwidth=0.25, relheight=0.1)
+            
+            self.comfirm_color_button = tk.Button(custom_window, text="确认色彩", command=comfirm_color)
+            self.comfirm_color_button.place(relx=0.45, rely=0.7, relwidth=0.25, relheight=0.1)
+            
+            def update_modify_image():
+                self.modified_R = self.modify_color_R_scale.get()
+                self.modified_G = self.modify_color_G_scale.get()
+                self.modified_B = self.modify_color_B_scale.get()
+                
+                self.modified_color_image = tk.Label(custom_window)
+                self.modified_color_image.place(relx=0.65, rely=0.05)
+                pure_modified_color_image = Image.new('RGB', (80, 80), (self.modified_R, self.modified_G, self.modified_B))
+                modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
+                self.modified_color_image.configure(image=modified_photo)
+                self.modified_color_image.image = modified_photo
+                
+                self.modified_color_image.after(100, update_modify_image)
+            
+            update_modify_image()
+            custom_window.mainloop
+            
+    def display_modified_color(self):
+        if self.set_modified_bool:
+            self.modified_color_image = tk.Label(self.master)
+            self.modified_color_image.place(relx=0.25, rely=0.85)
+            pure_modified_color_image = Image.new('RGB', (100, 100), (self.modified_R, self.modified_G, self.modified_B))
+            modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
+            self.modified_color_image.configure(image=modified_photo)
+            self.modified_color_image.image = modified_photo
+            
         
     def setting_recommend_numbers(self):# Create a custom TopLevel window
         # self.max_recommend_numbers = askinteger(title = "请输入希望推荐的歌曲数目（一个整数）", prompt = "歌曲数目:", initialvalue = 10)
@@ -287,7 +354,7 @@ class App:
                 self.max_recommend_numbers = result
                 messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 首歌")
                 self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 首", command=self.setting_recommend_numbers)
-                self.setting_recommend_numbers_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
+                self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
             except ValueError:
                 result = self.max_recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 首歌")
