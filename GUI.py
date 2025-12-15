@@ -232,7 +232,7 @@ class App:
         fetched_G = 0
         fetched_B = 0
         self.fetched_color_image = tk.Label(self.master)
-        self.fetched_color_image.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
+        self.fetched_color_image.place(relx=0.05, rely=0.85)
         
         pure_color_image = Image.new('RGB', (100, 100), (fetched_R, fetched_G, fetched_B))
         
