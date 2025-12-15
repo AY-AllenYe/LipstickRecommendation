@@ -47,6 +47,7 @@ import cv2
 import dlib
 import numpy as np
 from collections import OrderedDict
+import videocapture
 
 class App:
     def __init__(self, master):
@@ -70,6 +71,10 @@ class App:
         
         self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
         self.launch_video_capture_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
+        
+        self.video_label = tk.Label(master, text="图片位置")
+        self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
+        self.video_label.pack()
 
         self.fetch_color_button = tk.Button(master, text="提取色彩", command=self.fetch_color)
         self.adjust_color_button = tk.Button(master, text="调整色彩", command=self.adjust_color)
@@ -97,13 +102,24 @@ class App:
         self.quit_app_button = tk.Button(master, text="关闭并退出", command=self.quit_app)
         self.quit_app_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
 
-
+        self.cap = None
         self.cluster_file = 'datasets/lipstick_clusters.csv'
         self.rotate_angle = 0
         self.video_capture_landmarks = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
         self.lipstick_label_predict = -1  # -1 未识别
         self.lipstick_recommend_list = []
         self.max_recommend_numbers = 10
+        self.detector = dlib.get_frontal_face_detector()
+        self.criticPoints = dlib.shape_predictor(self.video_capture_landmarks)
+        self.landmarks = OrderedDict([
+            ('mouth',(48,68)),
+            ('right_eyebrow',(17,22)),
+            ('left_eye_brow',(22,27)),
+            ('right_eye',(36,42)),
+            ('left_eye',(42,48)),
+            ('nose',(27,36)),
+            ('jaw',(0,17))
+        ])
     
     def open_image(self):
         App.clear_text(self)
@@ -146,20 +162,65 @@ class App:
             self.image_label.configure(image=photo)
             self.image_label.image = photo
     
-    def launch_video_capture(self):
-        detector = dlib.get_frontal_face_detector()
-        criticPoints = dlib.shape_predictor(self.video_capture_landmarks)
-
-        shape_predictor_68_face_landmark=OrderedDict([
-            ('mouth',(48,68)),
-            ('right_eyebrow',(17,22)),
-            ('left_eye_brow',(22,27)),
-            ('right_eye',(36,42)),
-            ('left_eye',(42,48)),
-            ('nose',(27,36)),
-            ('jaw',(0,17))
-        ])
+    def launch_video_capture(self):      
+        return  
+        self.cap = cv2.VideoCapture(0)
+        self.video_update()
+        
+        while True:
+            # _, frame = self.cap.read()
+            # detected = self.detector(frame)
+            # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+            # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+            # photo = ImageTk.PhotoImage(frame)
+            # self.image_label.configure(image=photo)
+            # self.image_label.image = photo
+            # cv2.imshow('frame', frame)
+            self.video_update()
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
+        self.cap.release()
+        cv2.destroyAllWindows()
+        # while True:
+        #     _,frame=cap.read()
+        #     detected = detector(frame)
+        #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
+        #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
+        #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        #     img = Image.fromarray(cov)
+        #     img = ImageTk.PhotoImage(img)
+        #     canvas.create_image(0,0,image=img)
+            
+        #     # key=cv2.waitKey(1)
+        #     # if key == 27:
+        #     #     break
+        # cap.release()
+        # cv2.destroyAllWindows()
+        
+    def video_update(self):
         return
+        ret, frame = self.cap.read()
+        if not ret:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            return
+        # 人脸识别
+        detected = self.detector(frame)
+        mouth_range = self.landmarks['mouth']
+        frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+        frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+        # 将摄像头画面转换为PIL图像
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame)
+        # 缩放图像以适应窗口
+        frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
+        # 将PIL图像转换为PhotoImage对象
+        photoimage = ImageTk.PhotoImage(frame)
+        # 更新Label的图像
+        self.video_label.configure(image=photoimage)
+        self.video_label.image = photoimage
+        # 每隔100毫秒更新一次画面
+        self.after(100, self.video_update)
     
     def fetch_color(self):
         return
