@@ -120,6 +120,7 @@ class App:
             ('nose',(27,36)),
             ('jaw',(0,17))
         ])
+        self.recommendation_tag = -1
     
     def open_image(self):
         App.clear_text(self)
