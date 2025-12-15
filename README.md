@@ -100,6 +100,12 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.15 version 1.3.2
+
+**Goals (v1.3.2)**
+
+    1.One Function in GUI: Display color
+
 #### 2025.12.9 version 1.3.1
 
 **Goals (v1.3.1)**
