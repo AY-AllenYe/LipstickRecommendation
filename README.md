@@ -104,7 +104,7 @@ and others.
 
 **Goals (v1.3.2)**
 
-    1.One Function in GUI: Display color
+    1.Two Functions in GUI: Display color and Modify color
 
 #### 2025.12.9 version 1.3.1
 
