@@ -78,7 +78,9 @@ class App:
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.video_label.pack()
 
-        self.fetch_color_button = tk.Button(master, text="提取色彩", command=self.fetch_color)
+        self.display_fetched_color_button = tk.Button(master, text="提取色彩", command=self.display_fetched_color)
+        self.display_fetched_color_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
+
         self.adjust_color_button = tk.Button(master, text="调整色彩", command=self.adjust_color)
 
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
@@ -96,13 +98,13 @@ class App:
         # self.result_labels = scrolledtext.ScrolledText(master, wrap=tk.WORD)
 
         self.virtual_try_on_button = tk.Button(master, text="试装？", command=self.virtual_try_on)
-        self.virtual_try_on_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
+        self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
                 
         self.clear_text_button = tk.Button(master, text="清空推荐列表", command=self.clear_text)
         self.clear_text_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
         
         self.quit_app_button = tk.Button(master, text="关闭并退出", command=self.quit_app)
-        self.quit_app_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        self.quit_app_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
 
         self.cap = None
         self.cluster_file = 'datasets/lipstick_clusters.csv'
@@ -225,17 +227,26 @@ class App:
         # 每隔100毫秒更新一次画面
         self.after(100, self.video_update)
     
-    def fetch_color(self):
-        r = 0
-        g = 0
-        b = 0
+    def display_fetched_color(self):
+        fetched_R = 0
+        fetched_G = 0
+        fetched_B = 0
+        self.fetched_color_image = tk.Label(self.master)
+        self.fetched_color_image.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         
+        pure_color_image = Image.new('RGB', (100, 100), (fetched_R, fetched_G, fetched_B))
+        
+        photo = ImageTk.PhotoImage(pure_color_image)
+        self.fetched_color_image.configure(image=photo)
+        self.fetched_color_image.image = photo
         return
     
     def adjust_color(self):
+        
             # self.adjust_color_R_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
             # self.adjust_color_G_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
             # self.adjust_color_B_scale = tk.Scale(master, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+        
         # self.recover_color_button = tk.Button(master, text="复原色彩", command=self.recover_color)
         # self.comfirm_color_button = tk.Button(master, text="确认色彩", command=self.comfirm_color)
         return
@@ -249,9 +260,6 @@ class App:
     def setting_max_recommend_numbers(self, input):
         self.max_recommend_numbers = input
         return
-    
-    def loading_max_recommend_numbers(self):
-        return self.max_recommend_numbers
     
     def setting_recommend_numbers(self):# Create a custom TopLevel window
         # self.max_recommend_numbers = askinteger(title = "请输入希望推荐的歌曲数目（一个整数）", prompt = "歌曲数目:", initialvalue = 10)
@@ -274,7 +282,7 @@ class App:
                 self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 首", command=self.setting_recommend_numbers)
                 self.setting_recommend_numbers_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
             except ValueError:
-                result = App.loading_max_recommend_numbers(self)
+                result = self.max_recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 首歌")
             custom_window.destroy()
         button = tk.Button(custom_window, text="确认修改", command=get_integer)
