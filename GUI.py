@@ -48,6 +48,7 @@ import pygame
 import jittor as jt
 import jittor.transform as transform
 from utils.models import get_model
+from utils.rgb2hex import rgb_to_hex
 
 import cv2
 import dlib
@@ -420,8 +421,9 @@ class App:
             r, g, b = self.fetched_R, self.fetched_G, self.fetched_B
             
         img = Image.new('RGB', (100, 100), (r, g, b))
-        img_filename = 'temp_img.jpg'
-        output_dir = 'temp'
+        hex_string = rgb_to_hex(r, g, b)
+        img_filename = f'{hex_string}.jpg'
+        output_dir = 'history_color_image'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir, exist_ok=True)
         img.save(os.path.join(output_dir, img_filename))
