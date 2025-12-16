@@ -49,10 +49,12 @@ import jittor as jt
 import jittor.transform as transform
 from utils.models import get_model
 from utils.rgb2hex import rgb_to_hex
+from utils.recommend import recommendation
 
 import cv2
 import dlib
 import numpy as np
+import pandas as pd
 from collections import OrderedDict
 import videocapture
 
@@ -81,7 +83,6 @@ class App:
         
         self.video_label = tk.Label(master, text="摄像头打开位置")
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
-        self.video_label.pack()
 
         self.display_fetched_color_button = tk.Button(master, text="提取原图色彩", command=self.display_fetched_color)
         self.display_fetched_color_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
@@ -131,7 +132,7 @@ class App:
         ])
         
         # Set Recommendation Numbers
-        self.max_recommend_numbers = 10
+        self.recommend_numbers = 10
         
         # Recommendation
         self.set_recommendation_bool = False # false 未获得颜色， true 已提取
@@ -142,7 +143,6 @@ class App:
         self.recommendation_model.load_state_dict(jt.load(self.recommendation_model_path))
         # self.recommendation_model.eval()
         
-        self.lipstick_label_predict = -1  # -1 未识别
         self.lipstick_recommend_list = []
 
         # Display and Modify the color
@@ -153,7 +153,7 @@ class App:
         self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
     
     def open_image(self):
-        App.clear_text(self)
+        App.__init__(self, self.master)
         self.image_label = tk.Label(self.master)
         self.image_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.picture_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png;*.gif")])
@@ -382,7 +382,6 @@ class App:
             custom_window.mainloop            
         
     def setting_recommend_numbers(self):# Create a custom TopLevel window
-        # self.max_recommend_numbers = askinteger(title = "请输入希望推荐的歌曲数目（一个整数）", prompt = "歌曲数目:", initialvalue = 10)
         custom_window = tk.Toplevel(root)
         custom_window.title("希望推荐的口红数目")
         custom_window.geometry("300x125+400+400")  # 宽x高+水平偏移量+垂直偏移量
@@ -393,20 +392,20 @@ class App:
         entry = tk.Entry(custom_window, textvariable=entry_var)
         entry.pack(pady=10)
         
-        def comfirm_Rec_number():
+        def comfirm_recommend_numbers():
             try:
                 result = int(entry_var.get())
                 # print("你期望推荐 " + str(result) + " 首歌")
-                self.max_recommend_numbers = result
+                self.recommend_numbers = result
                 messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 支口红")
                 self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 支", command=self.setting_recommend_numbers)
                 self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
             except ValueError:
-                result = self.max_recommend_numbers
+                result = self.recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 支口红")
             custom_window.destroy()
         
-        button = tk.Button(custom_window, text="确认修改", command=comfirm_Rec_number)
+        button = tk.Button(custom_window, text="确认修改", command=comfirm_recommend_numbers)
         button.pack(pady=5)
         entry.focus_set()  # 将焦点设置在输入框上
         custom_window.mainloop()
@@ -442,34 +441,16 @@ class App:
         # print(f"{r},{g},{b}")
         # print(f"{pred_label}")
         
-        
         self.recommendation_button = tk.Button(self.master, text="重新识别推荐", command=self.recommendation)
         self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
-        return 
-    
-        pygame.mixer.music.stop()
-        self.inference_logs.delete(1.0, tk.END)
-        self.music_path = None
-        self.music_statu = 0  # 0 - 播放，1 - 暂停
-        self.picture_label_predict = -1
-        self.music_recommend_list = []
-        App.update_playing_button(self)
         
-        self.current_song = 0
-        if self.picture_path:
-            self.picture_label_predict = bp.recognize_picture("file:///" + self.picture_path)
-            if self.picture_label_predict == 1:
-                # result_str = "\n".join("happy")
-                self.inference_logs.insert(tk.END, "图片是 轻快 的\n" + "\n")
-            if self.picture_label_predict == 0:
-                # result_str = "\n".join("quiet")
-                self.inference_logs.insert(tk.END, "图片是 宁静 的\n" + "\n")
-            self.music_recommend_list = bp.recommend_Music(self.picture_label_predict, self.max_recommend_numbers)
-            result_str = "\n".join(self.music_recommend_list)
-            self.inference_logs.insert(tk.END, "        推荐歌曲: 共计 " + str(self.max_recommend_numbers) + " 首\n" + result_str + "\n")
-            
-            self.recognize_button = tk.Button(self.master, text="重新生成推荐清单\n（停止音乐）", command=self.recommendation)
-            self.recognize_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        self.lipstick_recommend_list = recommendation(self.cluster_file, pred_label, self.recommend_numbers)
+        
+        for index in range(self.recommend_numbers):
+            if not pd.isna(self.lipstick_recommend_list[index]['names']):
+                print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}")
+            else:
+                print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}")
 
     def display_info(self):
         return
