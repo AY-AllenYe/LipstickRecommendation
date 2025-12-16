@@ -69,6 +69,7 @@ the file tree
     |   |-- logger.py                   // Record and Report (Auto).
     |   |-- models.py                   // ResNet50.
     |   |-- recommend.py                // Randomly from repository.
+    |   |-- rgb2hex.py                   
 ```
 
 ### Bash
