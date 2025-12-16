@@ -45,6 +45,10 @@ import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1" # Settings: No Welcome Message from pygame.
 import pygame
 
+import jittor as jt
+import jittor.transform as transform
+from utils.models import get_model
+
 import cv2
 import dlib
 import numpy as np
@@ -107,13 +111,12 @@ class App:
         self.quit_app_button = tk.Button(master, text="关闭并退出", command=self.quit_app)
         self.quit_app_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
 
-        self.cap = None
-        self.cluster_file = 'datasets/lipstick_clusters.csv'
+        # Rotate the image
         self.rotate_angle = 0
-        self.video_capture_landmarks = 'models\pretrained\shape_predictor_68_face_landmarks.dat'
-        self.lipstick_label_predict = -1  # -1 未识别
-        self.lipstick_recommend_list = []
-        self.max_recommend_numbers = 10
+        
+        # Video Capture
+        self.cap = None
+        self.video_capture_landmarks = 'models/pretrained/shape_predictor_68_face_landmarks.dat'
         self.detector = dlib.get_frontal_face_detector()
         self.criticPoints = dlib.shape_predictor(self.video_capture_landmarks)
         self.landmarks = OrderedDict([
@@ -125,13 +128,28 @@ class App:
             ('nose',(27,36)),
             ('jaw',(0,17))
         ])
-        self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
-        self.modified_R, self.modified_G, self.modified_B = 0, 0, 0
+        
+        # Set Recommendation Numbers
+        self.max_recommend_numbers = 10
+        
+        # Recommendation
+        self.set_recommendation_bool = False # false 未获得颜色， true 已提取
+        self.cluster_file = 'datasets/lipstick_clusters.csv'
+        self.recommendation_model_path = 'models/saves/best_train_acc_model.pkl'
+        num_classes = 5
+        self.recommendation_model = get_model(num_classes=num_classes)
+        self.recommendation_model.load_state_dict(jt.load(self.recommendation_model_path))
+        # self.recommendation_model.eval()
+        
+        self.lipstick_label_predict = -1  # -1 未识别
+        self.lipstick_recommend_list = []
+
+        # Display and Modify the color
         self.set_fetched_bool = False # false 未提取， true 已提取
         self.set_modified_bool = False # false 未修改， true 已修改
+        self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
         self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
         self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
-        self.recommendation_tag = -1
     
     def open_image(self):
         App.clear_text(self)
@@ -248,6 +266,7 @@ class App:
         self.fetched_color_image.image = photo
         
         self.set_fetched_bool = True
+        self.set_recommendation_bool = True
         return
     
     def modify_color(self):
@@ -258,8 +277,10 @@ class App:
             if not self.set_modified_bool:
                 self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
             custom_window = tk.Toplevel(root)
-            custom_window.title("希望推荐的歌曲数目")
+            custom_window.title("调色盘")
             custom_window.geometry("400x400+400+400")  # 宽x高+水平偏移量+垂直偏移量
+            
+            custom_window.focus_set()
             
             self.fetched_color_image = tk.Label(custom_window)
             self.fetched_color_image.place(relx=0.1, rely=0.1)
@@ -275,21 +296,25 @@ class App:
             self.modified_color_image.place(relx=0.7, rely=0.1)
             
             self.fetched_color_image_label = tk.Label(custom_window, text="原始")
-            self.fetched_color_image_label.place(relx=0.175, rely=0.325)
+            self.fetched_color_image_label.place(relx=0.175, rely=0.31)
+            self.fetched_color_image_label_RGB = tk.Label(custom_window, text=f"({self.fetched_R}, {self.fetched_G}, {self.fetched_B})")
+            self.fetched_color_image_label_RGB.place(relx=0.1, rely=0.36)
             
             self.modify_color_image_label = tk.Label(custom_window, text="当前")
-            self.modify_color_image_label.place(relx=0.775, rely=0.325)
+            self.modify_color_image_label.place(relx=0.775, rely=0.31)
+            self.modify_color_image_label_RGB = tk.Label(custom_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
+            self.modify_color_image_label_RGB.place(relx=0.7, rely=0.36)
             
             self.modify_color_R_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_R_scale.place(relx=0.05, rely=0.4, relwidth=0.9, relheight=0.1)
+            self.modify_color_R_scale.place(relx=0.05, rely=0.41, relwidth=0.9, relheight=0.1)
             self.modify_color_R_scale.set(self.modified_R)
             
             self.modify_color_G_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_G_scale.place(relx=0.05, rely=0.5, relwidth=0.9, relheight=0.1)
+            self.modify_color_G_scale.place(relx=0.05, rely=0.51, relwidth=0.9, relheight=0.1)
             self.modify_color_G_scale.set(self.modified_G)
             
             self.modify_color_B_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_B_scale.place(relx=0.05, rely=0.6, relwidth=0.9, relheight=0.1)
+            self.modify_color_B_scale.place(relx=0.05, rely=0.61, relwidth=0.9, relheight=0.1)
             self.modify_color_B_scale.set(self.modified_B)
             
             if self.set_modified_bool:
@@ -302,7 +327,9 @@ class App:
                 self.last_modified_color_image.image = last_modified_photo
                 
                 self.last_modified_color_image_label = tk.Label(custom_window, text="上次")
-                self.last_modified_color_image_label.place(relx=0.475, rely=0.325)
+                self.last_modified_color_image_label.place(relx=0.475, rely=0.31)
+                self.last_modified_color_image_label_RGB = tk.Label(custom_window, text=f"({self.last_modified_R}, {self.last_modified_G}, {self.last_modified_B})")
+                self.last_modified_color_image_label_RGB.place(relx=0.4, rely=0.36)
             
             def recover_color():
                 self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
@@ -345,7 +372,10 @@ class App:
                 self.modified_color_image.configure(image=modified_photo)
                 self.modified_color_image.image = modified_photo
                 
-                self.modified_color_image.after(100, update_modify_image)
+                self.modify_color_image_label_RGB = tk.Label(custom_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
+                self.modify_color_image_label_RGB.place(relx=0.7, rely=0.36)
+                
+                self.modified_color_image.after(15, update_modify_image)
             
             update_modify_image()
             custom_window.mainloop            
@@ -353,36 +383,68 @@ class App:
     def setting_recommend_numbers(self):# Create a custom TopLevel window
         # self.max_recommend_numbers = askinteger(title = "请输入希望推荐的歌曲数目（一个整数）", prompt = "歌曲数目:", initialvalue = 10)
         custom_window = tk.Toplevel(root)
-        custom_window.title("希望推荐的歌曲数目")
-        custom_window.geometry("300x125+300+200")  # 宽x高+水平偏移量+垂直偏移量
-        label = tk.Label(custom_window, text="请输入歌曲数目:（一个整数）")
+        custom_window.title("希望推荐的口红数目")
+        custom_window.geometry("300x125+400+400")  # 宽x高+水平偏移量+垂直偏移量
+        label = tk.Label(custom_window, text="请输入数值:（一个整数）")
         label.pack(pady=5)
         entry_var = tk.StringVar()
         entry_var.set("10")
         entry = tk.Entry(custom_window, textvariable=entry_var)
         entry.pack(pady=10)
         
-        def get_integer():
+        def comfirm_Rec_number():
             try:
                 result = int(entry_var.get())
                 # print("你期望推荐 " + str(result) + " 首歌")
                 self.max_recommend_numbers = result
-                messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 首歌")
-                self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 首", command=self.setting_recommend_numbers)
+                messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 支口红")
+                self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 支", command=self.setting_recommend_numbers)
                 self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
             except ValueError:
                 result = self.max_recommend_numbers
-                messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 首歌")
+                messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 支口红")
             custom_window.destroy()
         
-        button = tk.Button(custom_window, text="确认修改", command=get_integer)
+        button = tk.Button(custom_window, text="确认修改", command=comfirm_Rec_number)
         button.pack(pady=5)
         entry.focus_set()  # 将焦点设置在输入框上
         custom_window.mainloop()
     
     def recommendation(self):
-        # self.recognize_button = tk.Button(master, text="重新识别", command=self.)
+        if not self.set_recommendation_bool:
+            messagebox.showinfo("Info", "请先提取色彩！")
+            return
+        if self.set_modified_bool:
+            r, g, b = self.modified_R, self.modified_G, self.modified_B
+        else:
+            r, g, b = self.fetched_R, self.fetched_G, self.fetched_B
+            
+        img = Image.new('RGB', (100, 100), (r, g, b))
+        img_filename = 'temp_img.jpg'
+        output_dir = 'temp'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+        img.save(os.path.join(output_dir, img_filename))
+        
+        test_transform = transform.Compose([
+            # transform.Resize((224, 224)),
+            # transform.ImageNormalize(mean=[0.5], std=[0.5]),
+            transform.ToTensor()
+        ])
+        
+        img = test_transform(img)
+        img = jt.array(img)[None, ...]  # shape: [1, 3, 224, 224]
+        self.recommendation_model.eval()
+        pred = self.recommendation_model(img)
+        pred_label = int(jt.argmax(pred, dim=1)[0].item())
+        # print(f"{r},{g},{b}")
+        # print(f"{pred_label}")
+        
+        
+        self.recommendation_button = tk.Button(self.master, text="重新识别推荐", command=self.recommendation)
+        self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
         return 
+    
         pygame.mixer.music.stop()
         self.inference_logs.delete(1.0, tk.END)
         self.music_path = None
