@@ -100,11 +100,18 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.16 version 1.3.3
+
+**Goals (v1.3.3)**
+
+    1.(Optimize) Two Functions in GUI: Modify color (UI) and Open picture (Initial).
+    2.(Partly Done) One Function in GUI: Recommendation (Not Done: Scrollbox to display the recommendation).
+
 #### 2025.12.15 version 1.3.2
 
 **Goals (v1.3.2)**
 
-    1.Two Functions in GUI: Display color and Modify color
+    1.Two Functions in GUI: Display color and Modify color.
 
 #### 2025.12.9 version 1.3.1
 
