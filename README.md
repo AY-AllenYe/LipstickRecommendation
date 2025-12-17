@@ -101,6 +101,13 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.16 version 1.3.3b
+
+**Goals (v1.3.3b)**
+
+    1.(Optimize) UI.
+    2.(Partly Done) One Function in GUI: Recommendation (saved to a CSV file) (Not Done: Scrollbox to display the recommendation).
+
 #### 2025.12.16 version 1.3.3
 
 **Goals (v1.3.3)**
