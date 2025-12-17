@@ -67,8 +67,8 @@ class App:
         self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
         self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.2, relheight=0.1)
 
-        self.image_label = tk.Label(master, text="图片打开位置")
-        self.image_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
+        self.image_label = tk.Label(master, text="图片打开位置", borderwidth = 3, relief="sunken")
+        self.image_label.place(relx=0.05, rely=0.675, relwidth=0.25, relheight=0.25)
         
         self.custom_font = font.Font(size=20, weight="bold") ## 修改字体与大小（需调用）
         
@@ -77,18 +77,24 @@ class App:
         
         self.left_rotate_button = tk.Button(master, text="↶", command=self.right_rotate, font=self.custom_font)
         self.left_rotate_button.place(relx=0.25, rely=0.1, relwidth=0.05, relheight=0.05)
-        
-        self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
-        self.launch_video_capture_button.place(relx=0.05, rely=0.2, relwidth=0.25, relheight=0.1)
-        
-        self.video_label = tk.Label(master, text="摄像头打开位置")
-        self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
 
         self.display_fetched_color_button = tk.Button(master, text="提取原图色彩", command=self.display_fetched_color)
-        self.display_fetched_color_button.place(relx=0.05, rely=0.35, relwidth=0.25, relheight=0.1)
+        self.display_fetched_color_button.place(relx=0.05, rely=0.2, relwidth=0.2, relheight=0.1)
+        
+        self.fetched_color_image = tk.Label(self.master, text="展\n示\n区", borderwidth = 3, relief="sunken")
+        self.fetched_color_image.place(relx=0.25, rely=0.2, relwidth=0.05, relheight=0.1)
 
         self.modify_color_button = tk.Button(master, text="调整色彩", command=self.modify_color)
-        self.modify_color_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        self.modify_color_button.place(relx=0.05, rely=0.35, relwidth=0.2, relheight=0.1)
+        
+        self.modified_color_image = tk.Label(self.master, text="展\n示\n区", borderwidth = 3, relief="sunken")
+        self.modified_color_image.place(relx=0.25, rely=0.35, relwidth=0.05, relheight=0.1)
+        
+        self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
+        self.launch_video_capture_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        
+        self.video_label = tk.Label(master, text="摄像头打开位置", borderwidth = 3, relief="sunken")
+        self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
 
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
         self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
@@ -154,17 +160,17 @@ class App:
     
     def open_image(self):
         App.__init__(self, self.master)
-        self.image_label = tk.Label(self.master)
-        self.image_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         self.picture_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png;*.gif")])
+        self.image_label = tk.Label(self.master, borderwidth = 3)
+        self.image_label.place(relx=0.05, rely=0.675, relwidth=0.25, relheight=0.25)
         if self.picture_path:
             try:
                 image = Image.open(self.picture_path)
                 width, height = image.size
-                if width > 500 or height > 500:
+                if width > 200 or height > 200:
                     max_size = max(width, height)
-                    new_width = int(width * 500 / max_size)
-                    new_height = int(height * 500 / max_size)
+                    new_width = int(width * 200 / max_size)
+                    new_height = int(height * 200 / max_size)
                     image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
                 self.original_image = image
                 photo = ImageTk.PhotoImage(image)
@@ -257,8 +263,8 @@ class App:
         self.fetched_R = 255
         self.fetched_G = 255
         self.fetched_B = 2
-        self.fetched_color_image = tk.Label(self.master)
-        self.fetched_color_image.place(relx=0.05, rely=0.85)
+        self.fetched_color_image = tk.Label(self.master, borderwidth = 3, relief="sunken")
+        self.fetched_color_image.place(relx=0.25, rely=0.2, relwidth=0.05, relheight=0.1)
         
         pure_color_image = Image.new('RGB', (100, 100), (self.fetched_R, self.fetched_G, self.fetched_B))
         
@@ -345,8 +351,8 @@ class App:
                 
                 self.set_modified_bool = True
                 
-                self.modified_color_image = tk.Label(self.master)
-                self.modified_color_image.place(relx=0.25, rely=0.85)
+                self.modified_color_image = tk.Label(self.master, borderwidth = 3, relief="sunken")
+                self.modified_color_image.place(relx=0.25, rely=0.35, relwidth=0.05, relheight=0.1)
                 pure_modified_color_image = Image.new('RGB', (100, 100), (self.modified_R, self.modified_G, self.modified_B))
                 modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
                 self.modified_color_image.configure(image=modified_photo)
@@ -445,12 +451,21 @@ class App:
         self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
         
         self.lipstick_recommend_list = recommendation(self.cluster_file, pred_label, self.recommend_numbers)
+        # print(self.lipstick_recommend_list)
         
-        for index in range(self.recommend_numbers):
-            if not pd.isna(self.lipstick_recommend_list[index]['names']):
-                print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}")
-            else:
-                print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}")
+        # for index in range(self.recommend_numbers):
+        #     if not pd.isna(self.lipstick_recommend_list[index]['names']):
+        #         print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}")
+        #     else:
+        #         print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}")
+        
+        tmp_recommendation_list_file = f"{output_dir}/{hex_string}.csv"
+        
+        df = pd.DataFrame(self.lipstick_recommend_list)
+        df.to_csv(tmp_recommendation_list_file, index=False, encoding="utf-8-sig")
+        # with open(tmp_recommendation_list_file, "w") as f:
+        #     for line in self.lipstick_recommend_list:
+        #         f.write(line + "\n")
 
     def display_info(self):
         return
