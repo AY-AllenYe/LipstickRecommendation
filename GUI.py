@@ -150,6 +150,8 @@ class App:
         # self.recommendation_model.eval()
         
         self.lipstick_recommend_list = []
+        
+        self.historically_saved_dir = 'history_save'
 
         # Display and Modify the color
         self.set_fetched_bool = False # false 未提取， true 已提取
@@ -431,10 +433,9 @@ class App:
         img = Image.new('RGB', (100, 100), (r, g, b))
         hex_string = rgb_to_hex(r, g, b)
         img_filename = f'{hex_string}.jpg'
-        output_dir = 'history_color_image'
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir, exist_ok=True)
-        img.save(os.path.join(output_dir, img_filename))
+        if not os.path.exists(self.historically_saved_dir):
+            os.makedirs(self.historically_saved_dir, exist_ok=True)
+        img.save(os.path.join(self.historically_saved_dir, img_filename))
         
         test_transform = transform.Compose([
             # transform.Resize((224, 224)),
@@ -451,7 +452,7 @@ class App:
         # print(f"{pred_label}")
         
         self.recommendation_button = tk.Button(self.master, text="重新识别推荐", command=self.recommendation)
-        self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
+        self.recommendation_button.place(relx=0.375, rely=0.675, relwidth=0.25, relheight=0.1)
         
         self.lipstick_recommend_list = recommendation(self.cluster_file, pred_label, self.recommend_numbers)
         # print(self.lipstick_recommend_list)
@@ -462,7 +463,7 @@ class App:
         #     else:
         #         print(f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}")
         
-        tmp_recommendation_list_file = f"{output_dir}/{hex_string}.csv"
+        tmp_recommendation_list_file = f"{self.historically_saved_dir}/{hex_string}.csv"
         
         df = pd.DataFrame(self.lipstick_recommend_list)
         df.to_csv(tmp_recommendation_list_file, index=False, encoding="utf-8-sig")
