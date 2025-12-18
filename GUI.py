@@ -90,17 +90,17 @@ class App:
         self.modified_color_image = tk.Label(self.master, text="展\n示\n区", borderwidth = 3, relief="sunken")
         self.modified_color_image.place(relx=0.25, rely=0.35, relwidth=0.05, relheight=0.1)
         
+        self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
+        self.setting_recommend_numbers_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        
+        self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
+        self.recommendation_button.place(relx=0.375, rely=0.675, relwidth=0.25, relheight=0.1)
+
         self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
-        self.launch_video_capture_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
+        self.launch_video_capture_button.place(relx=0.375, rely=0.825, relwidth=0.25, relheight=0.1)
         
         self.video_label = tk.Label(master, text="摄像头打开位置", borderwidth = 3, relief="sunken")
         self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
-
-        self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
-        self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
-
-        self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
-        self.recommendation_button.place(relx=0.4, rely=0.825, relwidth=0.25, relheight=0.1)
         
         self.inference_logs = tk.Label(master, text="推荐日志")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
@@ -111,13 +111,13 @@ class App:
         # self.result_labels = scrolledtext.ScrolledText(master, wrap=tk.WORD)
 
         self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
-        self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
                 
         self.clear_text_button = tk.Button(master, text="清空推荐列表", command=self.clear_text)
-        self.clear_text_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        self.clear_text_button.place(relx=0.675, rely=0.675, relwidth=0.25, relheight=0.1)
         
         self.quit_app_button = tk.Button(master, text="关闭并退出", command=self.quit_app)
-        self.quit_app_button.place(relx=0.7, rely=0.825, relwidth=0.25, relheight=0.1)
+        self.quit_app_button.place(relx=0.675, rely=0.825, relwidth=0.25, relheight=0.1)
 
         # Rotate the image
         self.rotate_angle = 0
@@ -161,6 +161,9 @@ class App:
     def open_image(self):
         App.__init__(self, self.master)
         self.picture_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png;*.gif")])
+        if self.picture_path == '':
+            return
+        
         self.image_label = tk.Label(self.master, borderwidth = 3)
         self.image_label.place(relx=0.05, rely=0.675, relwidth=0.25, relheight=0.25)
         if self.picture_path:
