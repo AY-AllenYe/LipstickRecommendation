@@ -101,6 +101,13 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.18 version 1.3.4
+
+**Goals (v1.3.3b)**
+
+    1.(Optimize) UI.
+    2.Two Functions in GUI: Recommendation (Scrollbox to display the recommendation) and Clear.
+
 #### 2025.12.16 version 1.3.3b
 
 **Goals (v1.3.3b)**
