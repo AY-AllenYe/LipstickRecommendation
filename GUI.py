@@ -66,9 +66,6 @@ class App:
 
         self.open_image_button = tk.Button(master, text="打开图片", command=self.open_image)
         self.open_image_button.place(relx=0.05, rely=0.05, relwidth=0.2, relheight=0.1)
-
-        self.image_label = tk.Label(master, text="图片打开位置", borderwidth = 3, relief="sunken")
-        self.image_label.place(relx=0.05, rely=0.675, relwidth=0.25, relheight=0.25)
         
         self.custom_font = font.Font(size=20, weight="bold") ## 修改字体与大小（需调用）
         
@@ -93,26 +90,27 @@ class App:
         self.setting_recommend_numbers_button = tk.Button(master, text="设置推荐数量\n默认推荐 10 支", command=self.setting_recommend_numbers)
         self.setting_recommend_numbers_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
         
+        self.image_label = tk.Label(master, text="图片打开位置", borderwidth = 3, relief="sunken")
+        self.image_label.place(relx=0.05, rely=0.675, relwidth=0.25, relheight=0.25)
+        
+        # self.video_label = tk.Label(master, text="摄像头打开位置", borderwidth = 3, relief="sunken")
+        # self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
+        self.recommemdation_list = scrolledtext.ScrolledText(master, wrap=tk.WORD)
+        self.recommemdation_list.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
+        
         self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
         self.recommendation_button.place(relx=0.375, rely=0.675, relwidth=0.25, relheight=0.1)
 
         self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
         self.launch_video_capture_button.place(relx=0.375, rely=0.825, relwidth=0.25, relheight=0.1)
         
-        self.video_label = tk.Label(master, text="摄像头打开位置", borderwidth = 3, relief="sunken")
-        self.video_label.place(relx=0.35, rely=0.05, relwidth=0.6, relheight=0.6)
         
-        self.inference_logs = tk.Label(master, text="推荐日志")
+        # self.inference_logs = tk.Label(master, text="训练日志")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
         
         # self.recommemdation_list = scrolledtext.ScrolledText(master, wrap=tk.WORD)
-        self.display_info_button = tk.Button(master, text="展示商品信息", command=self.display_info)
-        # self.goods_image_label = tk.Label(self.master)
-        # self.result_labels = scrolledtext.ScrolledText(master, wrap=tk.WORD)
-
-        self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
-        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
-                
+        # self.display_info_button = tk.Button(master, text="展示商品信息", command=self.display_info)
+        
         self.clear_text_button = tk.Button(master, text="清空推荐列表", command=self.clear_text)
         self.clear_text_button.place(relx=0.675, rely=0.675, relwidth=0.25, relheight=0.1)
         
@@ -205,6 +203,13 @@ class App:
             self.image_label.image = photo
     
     def launch_video_capture(self):      
+        
+        # self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
+        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        
+        
+        # self.virtual_try_on_button = tk.Button(master, text="关闭摄像头", command=self.virtual_try_on)
+        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
         return  
         self.cap = cv2.VideoCapture(0)
         self.video_update()
@@ -410,7 +415,7 @@ class App:
                 self.recommend_numbers = result
                 messagebox.showinfo("Info", f"已修改：你期望推荐 " + str(result) + " 支口红")
                 self.setting_recommend_numbers_button = tk.Button(self.master, text="设置推荐数量\n当前推荐 " + str(result) + " 支", command=self.setting_recommend_numbers)
-                self.setting_recommend_numbers_button.place(relx=0.4, rely=0.675, relwidth=0.25, relheight=0.1)
+                self.setting_recommend_numbers_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
             except ValueError:
                 result = self.recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 支口红")
@@ -467,10 +472,23 @@ class App:
         
         df = pd.DataFrame(self.lipstick_recommend_list)
         df.to_csv(tmp_recommendation_list_file, index=False, encoding="utf-8-sig")
-        # with open(tmp_recommendation_list_file, "w") as f:
-        #     for line in self.lipstick_recommend_list:
-        #         f.write(line + "\n")
-
+        
+        self.recommemdation_list.delete(1.0, tk.END)
+        self.recommemdation_list.insert(tk.END, "已读取色号：\n")
+        self.recommemdation_list.insert(tk.END, "推荐相关色号口红： \n\n")
+        real_recommend_count = 0
+        for index in range(self.recommend_numbers):
+            # if self.lipstick_recommend_list[index].empty:
+            #     print(f"Sorry the repository don't have so much. Here is all we save, total {real_recommend_count} items.")
+            #     break
+            if not pd.isna(self.lipstick_recommend_list[index]['names']):
+                result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}"
+            else:
+                result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}"
+            real_recommend_count = real_recommend_count + 1
+            self.recommemdation_list.insert(tk.END, result_str + "\n")
+        # self.recommemdation_list.insert(tk.END, "-------- 共计 " + str(real_recommend_count) + " 支 --------")
+    
     def display_info(self):
         return
 
@@ -478,6 +496,7 @@ class App:
         return
 
     def clear_text(self):
+        self.recommemdation_list.delete(1.0, tk.END)
         return
         pygame.mixer.music.stop()
         self.image_label.place_forget()
