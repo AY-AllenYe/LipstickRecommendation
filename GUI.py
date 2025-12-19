@@ -101,9 +101,8 @@ class App:
         self.recommendation_button = tk.Button(master, text="识别图片\n生成推荐色号", command=self.recommendation)
         self.recommendation_button.place(relx=0.375, rely=0.675, relwidth=0.25, relheight=0.1)
 
-        self.launch_video_capture_button = tk.Button(master, text="打开摄像头", command=self.launch_video_capture)
-        self.launch_video_capture_button.place(relx=0.375, rely=0.825, relwidth=0.25, relheight=0.1)
-        
+        self.virtual_try_on_button = tk.Button(master, text="虚拟试装间", command=self.virtual_try_on)
+        self.virtual_try_on_button.place(relx=0.375, rely=0.825, relwidth=0.25, relheight=0.1)
         
         # self.inference_logs = tk.Label(master, text="训练日志")
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
@@ -137,9 +136,9 @@ class App:
         
         # Set Recommendation Numbers
         self.recommend_numbers = 10
+        self.real_recommend_count = 0
         
         # Recommendation
-        self.set_recommendation_bool = False # false 未获得颜色， true 已提取
         self.cluster_file = 'datasets/lipstick_clusters.csv'
         self.recommendation_model_path = 'models/saves/best_train_acc_model.pkl'
         num_classes = 5
@@ -148,8 +147,8 @@ class App:
         # self.recommendation_model.eval()
         
         self.lipstick_recommend_list = []
-        
         self.historically_saved_dir = 'history_save'
+        self.set_recommendation_bool = False # false 未识别与推荐， true 已推荐
 
         # Display and Modify the color
         self.set_fetched_bool = False # false 未提取， true 已提取
@@ -216,129 +215,129 @@ class App:
         self.fetched_color_image.image = photo
         
         self.set_fetched_bool = True
-        self.set_recommendation_bool = True
         return
     
     def modify_color(self):
         if not self.set_fetched_bool:
             messagebox.showinfo("Info", "请先提取色彩！")
             return
-        else:
-            if not self.set_modified_bool:
-                self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
-            custom_window = tk.Toplevel(root)
-            custom_window.title("调色盘")
-            custom_window.geometry("400x400+400+400")  # 宽x高+水平偏移量+垂直偏移量
+        
+        if not self.set_modified_bool:
+            self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+        
+        modify_color_window = tk.Toplevel(root)
+        modify_color_window.title("调色盘")
+        modify_color_window.geometry("400x400+400+400")  # 宽x高+水平偏移量+垂直偏移量
             
-            custom_window.focus_set()
+        modify_color_window.focus_set()
+        
+        self.fetched_color_image = tk.Label(modify_color_window)
+        self.fetched_color_image.place(relx=0.1, rely=0.1)
+        pure_color_image = Image.new('RGB', (80, 80), (self.fetched_R, self.fetched_G, self.fetched_B))
+        photo = ImageTk.PhotoImage(pure_color_image)
+        self.fetched_color_image.configure(image=photo)
+        self.fetched_color_image.image = photo
+        
+        self.last_modified_color_image = tk.Label(modify_color_window)
+        self.last_modified_color_image.place(relx=0.4, rely=0.1)
+        
+        self.modified_color_image = tk.Label(modify_color_window)
+        self.modified_color_image.place(relx=0.7, rely=0.1)
             
-            self.fetched_color_image = tk.Label(custom_window)
-            self.fetched_color_image.place(relx=0.1, rely=0.1)
-            pure_color_image = Image.new('RGB', (80, 80), (self.fetched_R, self.fetched_G, self.fetched_B))
-            photo = ImageTk.PhotoImage(pure_color_image)
-            self.fetched_color_image.configure(image=photo)
-            self.fetched_color_image.image = photo
+        self.fetched_color_image_label = tk.Label(modify_color_window, text="原始")
+        self.fetched_color_image_label.place(relx=0.175, rely=0.31)
+        self.fetched_color_image_label_RGB = tk.Label(modify_color_window, text=f"({self.fetched_R}, {self.fetched_G}, {self.fetched_B})")
+        self.fetched_color_image_label_RGB.place(relx=0.1, rely=0.36)
             
-            self.last_modified_color_image = tk.Label(custom_window)
+        self.modify_color_image_label = tk.Label(modify_color_window, text="当前")
+        self.modify_color_image_label.place(relx=0.775, rely=0.31)
+        self.modify_color_image_label_RGB = tk.Label(modify_color_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
+        self.modify_color_image_label_RGB.place(relx=0.7, rely=0.36)
+            
+        self.modify_color_R_scale = tk.Scale(modify_color_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+        self.modify_color_R_scale.place(relx=0.05, rely=0.41, relwidth=0.9, relheight=0.1)
+        self.modify_color_R_scale.set(self.modified_R)
+            
+        self.modify_color_G_scale = tk.Scale(modify_color_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+        self.modify_color_G_scale.place(relx=0.05, rely=0.51, relwidth=0.9, relheight=0.1)
+        self.modify_color_G_scale.set(self.modified_G)
+            
+        self.modify_color_B_scale = tk.Scale(modify_color_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
+        self.modify_color_B_scale.place(relx=0.05, rely=0.61, relwidth=0.9, relheight=0.1)
+        self.modify_color_B_scale.set(self.modified_B)
+            
+        if self.set_modified_bool:
+            self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
+            self.last_modified_color_image = tk.Label(modify_color_window)
             self.last_modified_color_image.place(relx=0.4, rely=0.1)
+            pure_last_modified_color_image = Image.new('RGB', (80, 80), (self.last_modified_R, self.last_modified_G, self.last_modified_B))
+            last_modified_photo = ImageTk.PhotoImage(pure_last_modified_color_image)
+            self.last_modified_color_image.configure(image=last_modified_photo)
+            self.last_modified_color_image.image = last_modified_photo
             
-            self.modified_color_image = tk.Label(custom_window)
+            self.last_modified_color_image_label = tk.Label(modify_color_window, text="上次")
+            self.last_modified_color_image_label.place(relx=0.475, rely=0.31)
+            self.last_modified_color_image_label_RGB = tk.Label(modify_color_window, text=f"({self.last_modified_R}, {self.last_modified_G}, {self.last_modified_B})")
+            self.last_modified_color_image_label_RGB.place(relx=0.4, rely=0.36)
+        
+        def recover_color():
+            self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+            self.modify_color_R_scale.set(self.modified_R)
+            self.modify_color_G_scale.set(self.modified_G)
+            self.modify_color_B_scale.set(self.modified_B)
+        
+        def comfirm_color():
+            self.modified_R = self.modify_color_R_scale.get()
+            self.modified_G = self.modify_color_G_scale.get()
+            self.modified_B = self.modify_color_B_scale.get()
+                
+            self.set_modified_bool = True
+            
+            self.modified_color_image = tk.Label(self.master, borderwidth = 3, relief="sunken")
+            self.modified_color_image.place(relx=0.25, rely=0.35, relwidth=0.05, relheight=0.1)
+            pure_modified_color_image = Image.new('RGB', (100, 100), (self.modified_R, self.modified_G, self.modified_B))
+            modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
+            self.modified_color_image.configure(image=modified_photo)
+            self.modified_color_image.image = modified_photo
+                
+            messagebox.showinfo("Info", "修改成功！")
+            modify_color_window.destroy()
+        
+        self.recover_color_button = tk.Button(modify_color_window, text="复原色彩", command=recover_color)
+        self.recover_color_button.place(relx=0.05, rely=0.8, relwidth=0.35, relheight=0.1)
+        
+        self.comfirm_color_button = tk.Button(modify_color_window, text="确认色彩", command=comfirm_color)
+        self.comfirm_color_button.place(relx=0.6, rely=0.8, relwidth=0.35, relheight=0.1)
+        
+        def update_modify_image():
+            self.modified_R = self.modify_color_R_scale.get()
+            self.modified_G = self.modify_color_G_scale.get()
+            self.modified_B = self.modify_color_B_scale.get()
+            
+            self.modified_color_image = tk.Label(modify_color_window)
             self.modified_color_image.place(relx=0.7, rely=0.1)
-            
-            self.fetched_color_image_label = tk.Label(custom_window, text="原始")
-            self.fetched_color_image_label.place(relx=0.175, rely=0.31)
-            self.fetched_color_image_label_RGB = tk.Label(custom_window, text=f"({self.fetched_R}, {self.fetched_G}, {self.fetched_B})")
-            self.fetched_color_image_label_RGB.place(relx=0.1, rely=0.36)
-            
-            self.modify_color_image_label = tk.Label(custom_window, text="当前")
-            self.modify_color_image_label.place(relx=0.775, rely=0.31)
-            self.modify_color_image_label_RGB = tk.Label(custom_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
+            pure_modified_color_image = Image.new('RGB', (80, 80), (self.modified_R, self.modified_G, self.modified_B))
+            modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
+            self.modified_color_image.configure(image=modified_photo)
+            self.modified_color_image.image = modified_photo
+                
+            self.modify_color_image_label_RGB = tk.Label(modify_color_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
             self.modify_color_image_label_RGB.place(relx=0.7, rely=0.36)
             
-            self.modify_color_R_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_R_scale.place(relx=0.05, rely=0.41, relwidth=0.9, relheight=0.1)
-            self.modify_color_R_scale.set(self.modified_R)
+            self.modified_color_image.after(15, update_modify_image)
             
-            self.modify_color_G_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_G_scale.place(relx=0.05, rely=0.51, relwidth=0.9, relheight=0.1)
-            self.modify_color_G_scale.set(self.modified_G)
-            
-            self.modify_color_B_scale = tk.Scale(custom_window, variable = tk.DoubleVar(), from_ = 0, to = 255, orient = tk.HORIZONTAL)
-            self.modify_color_B_scale.place(relx=0.05, rely=0.61, relwidth=0.9, relheight=0.1)
-            self.modify_color_B_scale.set(self.modified_B)
-            
-            if self.set_modified_bool:
-                self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
-                self.last_modified_color_image = tk.Label(custom_window)
-                self.last_modified_color_image.place(relx=0.4, rely=0.1)
-                pure_last_modified_color_image = Image.new('RGB', (80, 80), (self.last_modified_R, self.last_modified_G, self.last_modified_B))
-                last_modified_photo = ImageTk.PhotoImage(pure_last_modified_color_image)
-                self.last_modified_color_image.configure(image=last_modified_photo)
-                self.last_modified_color_image.image = last_modified_photo
-                
-                self.last_modified_color_image_label = tk.Label(custom_window, text="上次")
-                self.last_modified_color_image_label.place(relx=0.475, rely=0.31)
-                self.last_modified_color_image_label_RGB = tk.Label(custom_window, text=f"({self.last_modified_R}, {self.last_modified_G}, {self.last_modified_B})")
-                self.last_modified_color_image_label_RGB.place(relx=0.4, rely=0.36)
-            
-            def recover_color():
-                self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
-                self.modify_color_R_scale.set(self.modified_R)
-                self.modify_color_G_scale.set(self.modified_G)
-                self.modify_color_B_scale.set(self.modified_B)
-            
-            def comfirm_color():
-                self.modified_R = self.modify_color_R_scale.get()
-                self.modified_G = self.modify_color_G_scale.get()
-                self.modified_B = self.modify_color_B_scale.get()
-                
-                self.set_modified_bool = True
-                
-                self.modified_color_image = tk.Label(self.master, borderwidth = 3, relief="sunken")
-                self.modified_color_image.place(relx=0.25, rely=0.35, relwidth=0.05, relheight=0.1)
-                pure_modified_color_image = Image.new('RGB', (100, 100), (self.modified_R, self.modified_G, self.modified_B))
-                modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
-                self.modified_color_image.configure(image=modified_photo)
-                self.modified_color_image.image = modified_photo
-                
-                messagebox.showinfo("Info", "修改成功！")
-                custom_window.destroy()
-            
-            self.recover_color_button = tk.Button(custom_window, text="复原色彩", command=recover_color)
-            self.recover_color_button.place(relx=0.05, rely=0.8, relwidth=0.35, relheight=0.1)
-            
-            self.comfirm_color_button = tk.Button(custom_window, text="确认色彩", command=comfirm_color)
-            self.comfirm_color_button.place(relx=0.6, rely=0.8, relwidth=0.35, relheight=0.1)
-            
-            def update_modify_image():
-                self.modified_R = self.modify_color_R_scale.get()
-                self.modified_G = self.modify_color_G_scale.get()
-                self.modified_B = self.modify_color_B_scale.get()
-                
-                self.modified_color_image = tk.Label(custom_window)
-                self.modified_color_image.place(relx=0.7, rely=0.1)
-                pure_modified_color_image = Image.new('RGB', (80, 80), (self.modified_R, self.modified_G, self.modified_B))
-                modified_photo = ImageTk.PhotoImage(pure_modified_color_image)
-                self.modified_color_image.configure(image=modified_photo)
-                self.modified_color_image.image = modified_photo
-                
-                self.modify_color_image_label_RGB = tk.Label(custom_window, text=f"({self.modified_R}, {self.modified_G}, {self.modified_B})")
-                self.modify_color_image_label_RGB.place(relx=0.7, rely=0.36)
-                
-                self.modified_color_image.after(15, update_modify_image)
-            
-            update_modify_image()
-            custom_window.mainloop            
+        update_modify_image()
+        modify_color_window.mainloop            
         
     def setting_recommend_numbers(self):# Create a custom TopLevel window
-        custom_window = tk.Toplevel(root)
-        custom_window.title("希望推荐的口红数目")
-        custom_window.geometry("300x125+400+400")  # 宽x高+水平偏移量+垂直偏移量
-        label = tk.Label(custom_window, text="请输入数值:（一个整数）")
+        set_recommend_number_window = tk.Toplevel(root)
+        set_recommend_number_window.title("希望推荐的口红数目")
+        set_recommend_number_window.geometry("300x125+400+400")  # 宽x高+水平偏移量+垂直偏移量
+        label = tk.Label(set_recommend_number_window, text="请输入数值:（一个整数）")
         label.pack(pady=5)
         entry_var = tk.StringVar()
         entry_var.set("10")
-        entry = tk.Entry(custom_window, textvariable=entry_var)
+        entry = tk.Entry(set_recommend_number_window, textvariable=entry_var)
         entry.pack(pady=10)
         
         def comfirm_recommend_numbers():
@@ -352,15 +351,15 @@ class App:
             except ValueError:
                 result = self.recommend_numbers
                 messagebox.showwarning("Warning", f"无效修改。推荐数目保持 " + str(result) + " 支口红")
-            custom_window.destroy()
+            set_recommend_number_window.destroy()
         
-        button = tk.Button(custom_window, text="确认修改", command=comfirm_recommend_numbers)
+        button = tk.Button(set_recommend_number_window, text="确认修改", command=comfirm_recommend_numbers)
         button.pack(pady=5)
         entry.focus_set()  # 将焦点设置在输入框上
-        custom_window.mainloop()
+        set_recommend_number_window.mainloop()
     
     def recommendation(self):
-        if not self.set_recommendation_bool:
+        if not self.set_fetched_bool:
             messagebox.showinfo("Info", "请先提取色彩！")
             return
         if self.set_modified_bool:
@@ -409,30 +408,110 @@ class App:
         self.recommemdation_list.delete(1.0, tk.END)
         self.recommemdation_list.insert(tk.END, "已读取色号：\n")
         self.recommemdation_list.insert(tk.END, "推荐相关色号口红： \n\n")
-        real_recommend_count = 0
+        self.real_recommend_count = 0
+        
         for index in range(self.recommend_numbers):
-            # if self.lipstick_recommend_list[index].empty:
+            # if not self.lipstick_recommend_list[index].any():
             #     print(f"Sorry the repository don't have so much. Here is all we save, total {real_recommend_count} items.")
             #     break
-            if not pd.isna(self.lipstick_recommend_list[index]['names']):
-                result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}"
-            else:
-                result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}"
-            real_recommend_count = real_recommend_count + 1
-            self.recommemdation_list.insert(tk.END, result_str + "\n")
-        # self.recommemdation_list.insert(tk.END, "-------- 共计 " + str(real_recommend_count) + " 支 --------")
+            try:
+                if not pd.isna(self.lipstick_recommend_list[index]['names']):
+                    result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - {self.lipstick_recommend_list[index]['names']}, {self.lipstick_recommend_list[index]['id']}"
+                else:
+                    result_str = f"{self.lipstick_recommend_list[index]['brands']} - {self.lipstick_recommend_list[index]['series']} - (Unnamed), {self.lipstick_recommend_list[index]['id']}"
+                self.real_recommend_count = self.real_recommend_count + 1
+                self.recommemdation_list.insert(tk.END, result_str + "\n")
+            except:
+                print(f"Sorry the repository don't have so much. Here is all we save, total {self.real_recommend_count} items.")
+                break
+        self.recommemdation_list.insert(tk.END, "-------- 共计 " + str(self.real_recommend_count) + " 支 --------")
+        self.set_recommendation_bool = True
+
+    def clear_text(self):
+        self.recommemdation_list.delete(1.0, tk.END)
     
-    def display_info(self):
-        return
+    def virtual_try_on(self):
+        if not self.set_recommendation_bool:
+            messagebox.showinfo("Info", "请先识别与推荐！")
+            return
+        
+        virtual_try_on_window = tk.Toplevel(root)
+        virtual_try_on_window.title("试衣间")
+        virtual_try_on_window.geometry("600x600+100+100")  # 宽x高+水平偏移量+垂直偏移量
+            
+        virtual_try_on_window.focus_set()
+        
+        self.current_recommend_index = 0
+        
+        def display_info():
+            if not pd.isna(self.lipstick_recommend_list[self.current_recommend_index]['names']):
+                result_str = f"{self.lipstick_recommend_list[self.current_recommend_index]['brands']} - {self.lipstick_recommend_list[self.current_recommend_index]['series']} - {self.lipstick_recommend_list[self.current_recommend_index]['names']}, {self.lipstick_recommend_list[self.current_recommend_index]['id']}"
+            else:
+                result_str = f"{self.lipstick_recommend_list[self.current_recommend_index]['brands']} - {self.lipstick_recommend_list[self.current_recommend_index]['series']} - (Unnamed), {self.lipstick_recommend_list[self.current_recommend_index]['id']}"
+            
+            self.current_recommend_item_label = tk.Label(virtual_try_on_window, text=result_str, borderwidth = 3, relief="sunken")
+            self.current_recommend_item_label.place(relx=0.05, rely=0.075, relwidth=0.9, relheight=0.05)
+            
+            display_info_R = self.lipstick_recommend_list[self.current_recommend_index]['R']
+            display_info_G = self.lipstick_recommend_list[self.current_recommend_index]['G']
+            display_info_B = self.lipstick_recommend_list[self.current_recommend_index]['B']
+            
+            self.display_color_image_label = tk.Label(virtual_try_on_window)
+            self.display_color_image_label.place(relx=0.25, rely=0.175, relwidth=0.05, relheight=0.1)
+            pure_color_image = Image.new('RGB', (80, 80), (display_info_R, display_info_G, display_info_B))
+            photo = ImageTk.PhotoImage(pure_color_image)
+            self.display_color_image_label.configure(image=photo)
+            self.display_color_image_label.image = photo
+        
+        def last_recommend_item():
+            self.current_recommend_index = (self.current_recommend_index - 1 + self.real_recommend_count) % self.real_recommend_count
+            display_info()
+        
+        def next_recommend_item():
+            self.current_recommend_index = (self.current_recommend_index + 1 + self.real_recommend_count) % self.real_recommend_count
+            display_info()
+        
+        self.current_recommend_item_label = tk.Label(virtual_try_on_window, text="", borderwidth = 3, relief="sunken")
+        self.current_recommend_item_label.place(relx=0.05, rely=0.075, relwidth=0.9, relheight=0.05)
+        
+        self.display_color_image_button = tk.Button(virtual_try_on_window, text="展示色彩", command=display_info)
+        self.display_color_image_button.place(relx=0.05, rely=0.175, relwidth=0.2, relheight=0.1)
+        
+        self.display_color_image_label = tk.Label(virtual_try_on_window, text="展\n示\n区", borderwidth = 3, relief="sunken")
+        self.display_color_image_label.place(relx=0.25, rely=0.175, relwidth=0.05, relheight=0.1)
+        
+        self.last_recommend_item_button = tk.Button(virtual_try_on_window, text="↑", command=last_recommend_item)
+        self.last_recommend_item_button.place(relx=0.255, rely=0.175, relwidth=0.05, relheight=0.05)
+        
+        self.next_recommend_item_button = tk.Button(virtual_try_on_window, text="↓", command=next_recommend_item)
+        self.next_recommend_item_button.place(relx=0.255, rely=0.225, relwidth=0.05, relheight=0.05)
+        
+        self.display_info_button = tk.Button(virtual_try_on_window, text="打开摄像头", command=display_info)
+        self.display_info_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
+        
+        self.display_info_button = tk.Button(virtual_try_on_window, text="改变口红颜色", command=display_info)
+        self.display_info_button.place(relx=0.7, rely=0.175, relwidth=0.25, relheight=0.1)
+        
+        self.display_info_image_label = tk.Label(virtual_try_on_window, text="摄像头位置", borderwidth = 3, relief="sunken")
+        self.display_info_image_label.place(relx=0.1, rely=0.5, relwidth=0.4, relheight=0.4)
+        
+        
+        
+        
+        
+        self.modified_color_image = tk.Label(virtual_try_on_window)
+        self.modified_color_image.place(relx=0.7, rely=0.1)
+    
+    
 
     def launch_video_capture(self):      
         
-        # self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
-        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        # self.dress_up_button = tk.Button(master, text="试妆？", command=self.dress_up)
+        # self.dress_up_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
         
         
-        # self.virtual_try_on_button = tk.Button(master, text="关闭摄像头", command=self.virtual_try_on)
-        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        # self.dress_up_button = tk.Button(master, text="关闭摄像头", command=self.dress_up)
+        # self.dress_up_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
         return  
         self.cap = cv2.VideoCapture(0)
         self.video_update()
@@ -492,12 +571,9 @@ class App:
         # 每隔100毫秒更新一次画面
         self.after(100, self.video_update)
     
-    def virtual_try_on(self):
+    def dress_up(self):
         return
 
-    def clear_text(self):
-        self.recommemdation_list.delete(1.0, tk.END)
-        
     def quit_app(self):
         exit()
 
