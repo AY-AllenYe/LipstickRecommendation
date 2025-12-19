@@ -108,7 +108,7 @@ class App:
         # self.inference_logs.place(relx=0.05, rely=0.65, relwidth=0.3, relheight=0.3)
         
         # self.recommemdation_list = scrolledtext.ScrolledText(master, wrap=tk.WORD)
-        # self.display_info_button = tk.Button(master, text="展示商品信息", command=self.display_info)
+        # self.virtual_try_on_display_color_button = tk.Button(master, text="展示商品信息", command=self.virtual_try_on_display_color)
         
         self.clear_text_button = tk.Button(master, text="清空推荐列表", command=self.clear_text)
         self.clear_text_button.place(relx=0.675, rely=0.675, relwidth=0.25, relheight=0.1)
@@ -443,7 +443,7 @@ class App:
         
         self.current_recommend_index = 0
         
-        def display_info():
+        def virtual_try_on_display_color():
             if not pd.isna(self.lipstick_recommend_list[self.current_recommend_index]['names']):
                 result_str = f"{self.lipstick_recommend_list[self.current_recommend_index]['brands']} - {self.lipstick_recommend_list[self.current_recommend_index]['series']} - {self.lipstick_recommend_list[self.current_recommend_index]['names']}, {self.lipstick_recommend_list[self.current_recommend_index]['id']}"
             else:
@@ -452,24 +452,24 @@ class App:
             self.current_recommend_item_label = tk.Label(virtual_try_on_window, text=result_str, borderwidth = 3, relief="sunken")
             self.current_recommend_item_label.place(relx=0.05, rely=0.075, relwidth=0.9, relheight=0.05)
             
-            display_info_R = self.lipstick_recommend_list[self.current_recommend_index]['R']
-            display_info_G = self.lipstick_recommend_list[self.current_recommend_index]['G']
-            display_info_B = self.lipstick_recommend_list[self.current_recommend_index]['B']
+            virtual_try_on_display_color_R = self.lipstick_recommend_list[self.current_recommend_index]['R']
+            virtual_try_on_display_color_G = self.lipstick_recommend_list[self.current_recommend_index]['G']
+            virtual_try_on_display_color_B = self.lipstick_recommend_list[self.current_recommend_index]['B']
             
             self.virtual_try_on_display_color_image_label = tk.Label(virtual_try_on_window, borderwidth = 3, relief="sunken")
             self.virtual_try_on_display_color_image_label.place(relx=0.3, rely=0.175, relwidth=0.05, relheight=0.1)
-            pure_color_image = Image.new('RGB', (80, 80), (display_info_R, display_info_G, display_info_B))
+            pure_color_image = Image.new('RGB', (80, 80), (virtual_try_on_display_color_R, virtual_try_on_display_color_G, virtual_try_on_display_color_B))
             photo = ImageTk.PhotoImage(pure_color_image)
             self.virtual_try_on_display_color_image_label.configure(image=photo)
             self.virtual_try_on_display_color_image_label.image = photo
         
         def last_recommend_item():
             self.current_recommend_index = (self.current_recommend_index - 1 + self.real_recommend_count) % self.real_recommend_count
-            display_info()
+            virtual_try_on_display_color()
         
         def next_recommend_item():
             self.current_recommend_index = (self.current_recommend_index + 1 + self.real_recommend_count) % self.real_recommend_count
-            display_info()    
+            virtual_try_on_display_color()    
             
         def video_update(self):
             return
@@ -539,7 +539,7 @@ class App:
         self.current_recommend_item_label = tk.Label(virtual_try_on_window, text="", borderwidth = 3, relief="sunken")
         self.current_recommend_item_label.place(relx=0.05, rely=0.075, relwidth=0.9, relheight=0.05)
         
-        self.display_color_image_button = tk.Button(virtual_try_on_window, text="展示色彩", command=display_info)
+        self.display_color_image_button = tk.Button(virtual_try_on_window, text="展示色彩", command=virtual_try_on_display_color)
         self.display_color_image_button.place(relx=0.05, rely=0.175, relwidth=0.2, relheight=0.1)
         
         self.last_recommend_item_button = tk.Button(virtual_try_on_window, text="↑", command=last_recommend_item)
