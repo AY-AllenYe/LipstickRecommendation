@@ -181,16 +181,6 @@ class App:
                 self.image_label.image = photo
             except Exception as e:
                 messagebox.showerror("Error", f"无法打开图片：{e}")
-
-    def right_rotate(self):
-        if hasattr(self, 'original_image'):
-            self.rotate_angle += 90
-            rotated_image = self.original_image.rotate(self.rotate_angle)
-            # self.original_image = rotated_image
-            
-            photo = ImageTk.PhotoImage(rotated_image)
-            self.image_label.configure(image=photo)
-            self.image_label.image = photo
     
     def left_rotate(self):
         if hasattr(self, 'original_image'):
@@ -201,73 +191,16 @@ class App:
             photo = ImageTk.PhotoImage(rotated_image)
             self.image_label.configure(image=photo)
             self.image_label.image = photo
-    
-    def launch_video_capture(self):      
-        
-        # self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
-        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
-        
-        
-        # self.virtual_try_on_button = tk.Button(master, text="关闭摄像头", command=self.virtual_try_on)
-        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
-        return  
-        self.cap = cv2.VideoCapture(0)
-        self.video_update()
-        
-        while True:
-            # _, frame = self.cap.read()
-            # detected = self.detector(frame)
-            # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
-            # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
-            # photo = ImageTk.PhotoImage(frame)
-            # self.image_label.configure(image=photo)
-            # self.image_label.image = photo
-            # cv2.imshow('frame', frame)
-            self.video_update()
-            key = cv2.waitKey(1)
-            if key == 27:
-                break
-        self.cap.release()
-        cv2.destroyAllWindows()
-        # while True:
-        #     _,frame=cap.read()
-        #     detected = detector(frame)
-        #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
-        #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
-        #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        #     img = Image.fromarray(cov)
-        #     img = ImageTk.PhotoImage(img)
-        #     canvas.create_image(0,0,image=img)
             
-        #     # key=cv2.waitKey(1)
-        #     # if key == 27:
-        #     #     break
-        # cap.release()
-        # cv2.destroyAllWindows()
-        
-    def video_update(self):
-        return
-        ret, frame = self.cap.read()
-        if not ret:
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            return
-        # 人脸识别
-        detected = self.detector(frame)
-        mouth_range = self.landmarks['mouth']
-        frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
-        frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
-        # 将摄像头画面转换为PIL图像
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = Image.fromarray(frame)
-        # 缩放图像以适应窗口
-        frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
-        # 将PIL图像转换为PhotoImage对象
-        photoimage = ImageTk.PhotoImage(frame)
-        # 更新Label的图像
-        self.video_label.configure(image=photoimage)
-        self.video_label.image = photoimage
-        # 每隔100毫秒更新一次画面
-        self.after(100, self.video_update)
+    def right_rotate(self):
+        if hasattr(self, 'original_image'):
+            self.rotate_angle += 90
+            rotated_image = self.original_image.rotate(self.rotate_angle)
+            # self.original_image = rotated_image
+            
+            photo = ImageTk.PhotoImage(rotated_image)
+            self.image_label.configure(image=photo)
+            self.image_label.image = photo
     
     def display_fetched_color(self):
         self.fetched_R = 255
@@ -492,27 +425,78 @@ class App:
     def display_info(self):
         return
 
+    def launch_video_capture(self):      
+        
+        # self.virtual_try_on_button = tk.Button(master, text="试妆？", command=self.virtual_try_on)
+        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        
+        
+        # self.virtual_try_on_button = tk.Button(master, text="关闭摄像头", command=self.virtual_try_on)
+        # self.virtual_try_on_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
+        return  
+        self.cap = cv2.VideoCapture(0)
+        self.video_update()
+        
+        while True:
+            # _, frame = self.cap.read()
+            # detected = self.detector(frame)
+            # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+            # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+            # photo = ImageTk.PhotoImage(frame)
+            # self.image_label.configure(image=photo)
+            # self.image_label.image = photo
+            # cv2.imshow('frame', frame)
+            self.video_update()
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
+        self.cap.release()
+        cv2.destroyAllWindows()
+        # while True:
+        #     _,frame=cap.read()
+        #     detected = detector(frame)
+        #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
+        #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
+        #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        #     img = Image.fromarray(cov)
+        #     img = ImageTk.PhotoImage(img)
+        #     canvas.create_image(0,0,image=img)
+            
+        #     # key=cv2.waitKey(1)
+        #     # if key == 27:
+        #     #     break
+        # cap.release()
+        # cv2.destroyAllWindows()
+        
+    def video_update(self):
+        return
+        ret, frame = self.cap.read()
+        if not ret:
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            return
+        # 人脸识别
+        detected = self.detector(frame)
+        mouth_range = self.landmarks['mouth']
+        frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+        frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+        # 将摄像头画面转换为PIL图像
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame)
+        # 缩放图像以适应窗口
+        frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
+        # 将PIL图像转换为PhotoImage对象
+        photoimage = ImageTk.PhotoImage(frame)
+        # 更新Label的图像
+        self.video_label.configure(image=photoimage)
+        self.video_label.image = photoimage
+        # 每隔100毫秒更新一次画面
+        self.after(100, self.video_update)
+    
     def virtual_try_on(self):
         return
 
     def clear_text(self):
         self.recommemdation_list.delete(1.0, tk.END)
-        return
-        pygame.mixer.music.stop()
-        self.image_label.place_forget()
-        self.inference_logs.delete(1.0, tk.END)
-        
-        self.picture_path = None
-        self.music_path = None
-        self.rotate_angle = 0
-        self.music_statu = 0  # 0 - 播放，1 - 暂停
-        self.picture_label_predict = -1
-        self.music_recommend_list = []
-        self.current_song = 0
-        
-        self.recognize_button = tk.Button(self.master, text="识别图片\n生成推荐音乐", command=self.recommendation)
-        self.recognize_button.place(relx=0.05, rely=0.5, relwidth=0.25, relheight=0.1)
-        App.update_playing_button(self)
         
     def quit_app(self):
         exit()
