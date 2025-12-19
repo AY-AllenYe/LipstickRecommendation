@@ -456,12 +456,12 @@ class App:
             display_info_G = self.lipstick_recommend_list[self.current_recommend_index]['G']
             display_info_B = self.lipstick_recommend_list[self.current_recommend_index]['B']
             
-            self.display_color_image_label = tk.Label(virtual_try_on_window)
-            self.display_color_image_label.place(relx=0.25, rely=0.175, relwidth=0.05, relheight=0.1)
+            self.virtual_try_on_display_color_image_label = tk.Label(virtual_try_on_window, borderwidth = 3, relief="sunken")
+            self.virtual_try_on_display_color_image_label.place(relx=0.3, rely=0.175, relwidth=0.05, relheight=0.1)
             pure_color_image = Image.new('RGB', (80, 80), (display_info_R, display_info_G, display_info_B))
             photo = ImageTk.PhotoImage(pure_color_image)
-            self.display_color_image_label.configure(image=photo)
-            self.display_color_image_label.image = photo
+            self.virtual_try_on_display_color_image_label.configure(image=photo)
+            self.virtual_try_on_display_color_image_label.image = photo
         
         def last_recommend_item():
             self.current_recommend_index = (self.current_recommend_index - 1 + self.real_recommend_count) % self.real_recommend_count
@@ -469,7 +469,72 @@ class App:
         
         def next_recommend_item():
             self.current_recommend_index = (self.current_recommend_index + 1 + self.real_recommend_count) % self.real_recommend_count
-            display_info()
+            display_info()    
+            
+        def video_update(self):
+            return
+            ret, frame = self.cap.read()
+            if not ret:
+                self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                return
+            # 人脸识别
+            detected = self.detector(frame)
+            mouth_range = self.landmarks['mouth']
+            frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+            frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+            # 将摄像头画面转换为PIL图像
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = Image.fromarray(frame)
+            # 缩放图像以适应窗口
+            frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
+            # 将PIL图像转换为PhotoImage对象
+            photoimage = ImageTk.PhotoImage(frame)
+            # 更新Label的图像
+            self.video_label.configure(image=photoimage)
+            self.video_label.image = photoimage
+            # 每隔100毫秒更新一次画面
+            self.after(100, self.video_update)
+            
+        def launch_video_capture(self):
+            # self.release_video_capture_button = tk.Button(master, text="关闭摄像头", command=release_video_capture)
+            # self.release_video_capture_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
+            return  
+            self.cap = cv2.VideoCapture(0)
+            self.video_update()
+            
+            while True:
+                # _, frame = self.cap.read()
+                # detected = self.detector(frame)
+                # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
+                # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
+                # photo = ImageTk.PhotoImage(frame)
+                # self.image_label.configure(image=photo)
+                # self.image_label.image = photo
+                # cv2.imshow('frame', frame)
+                self.video_update()
+                key = cv2.waitKey(1)
+                if key == 27:
+                    break
+            self.cap.release()
+            cv2.destroyAllWindows()
+            # while True:
+            #     _,frame=cap.read()
+            #     detected = detector(frame)
+            #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
+            #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
+            #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            #     img = Image.fromarray(cov)
+            #     img = ImageTk.PhotoImage(img)
+            #     canvas.create_image(0,0,image=img)
+                
+            #     # key=cv2.waitKey(1)
+            #     # if key == 27:
+            #     #     break
+            # cap.release()
+            # cv2.destroyAllWindows()
+                
+        def dress_up(self):
+            return
         
         self.current_recommend_item_label = tk.Label(virtual_try_on_window, text="", borderwidth = 3, relief="sunken")
         self.current_recommend_item_label.place(relx=0.05, rely=0.075, relwidth=0.9, relheight=0.05)
@@ -477,102 +542,23 @@ class App:
         self.display_color_image_button = tk.Button(virtual_try_on_window, text="展示色彩", command=display_info)
         self.display_color_image_button.place(relx=0.05, rely=0.175, relwidth=0.2, relheight=0.1)
         
-        self.display_color_image_label = tk.Label(virtual_try_on_window, text="展\n示\n区", borderwidth = 3, relief="sunken")
-        self.display_color_image_label.place(relx=0.25, rely=0.175, relwidth=0.05, relheight=0.1)
-        
         self.last_recommend_item_button = tk.Button(virtual_try_on_window, text="↑", command=last_recommend_item)
-        self.last_recommend_item_button.place(relx=0.255, rely=0.175, relwidth=0.05, relheight=0.05)
+        self.last_recommend_item_button.place(relx=0.25, rely=0.175, relwidth=0.05, relheight=0.05)
         
         self.next_recommend_item_button = tk.Button(virtual_try_on_window, text="↓", command=next_recommend_item)
-        self.next_recommend_item_button.place(relx=0.255, rely=0.225, relwidth=0.05, relheight=0.05)
+        self.next_recommend_item_button.place(relx=0.25, rely=0.225, relwidth=0.05, relheight=0.05)
         
-        self.display_info_button = tk.Button(virtual_try_on_window, text="打开摄像头", command=display_info)
-        self.display_info_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
+        self.virtual_try_on_display_color_image_label = tk.Label(virtual_try_on_window, text="展\n示\n区", borderwidth = 3, relief="sunken")
+        self.virtual_try_on_display_color_image_label.place(relx=0.3, rely=0.175, relwidth=0.05, relheight=0.1)
         
-        self.display_info_button = tk.Button(virtual_try_on_window, text="改变口红颜色", command=display_info)
-        self.display_info_button.place(relx=0.7, rely=0.175, relwidth=0.25, relheight=0.1)
+        self.launch_video_capture_button = tk.Button(virtual_try_on_window, text="打开摄像头", command=launch_video_capture)
+        self.launch_video_capture_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
         
-        self.display_info_image_label = tk.Label(virtual_try_on_window, text="摄像头位置", borderwidth = 3, relief="sunken")
-        self.display_info_image_label.place(relx=0.1, rely=0.5, relwidth=0.4, relheight=0.4)
+        self.dress_up_button = tk.Button(virtual_try_on_window, text="改变口红颜色", command=dress_up)
+        self.dress_up_button.place(relx=0.7, rely=0.175, relwidth=0.25, relheight=0.1)
         
-        
-        
-        
-        
-        self.modified_color_image = tk.Label(virtual_try_on_window)
-        self.modified_color_image.place(relx=0.7, rely=0.1)
-    
-    
-
-    def launch_video_capture(self):      
-        
-        # self.dress_up_button = tk.Button(master, text="试妆？", command=self.dress_up)
-        # self.dress_up_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
-        
-        
-        # self.dress_up_button = tk.Button(master, text="关闭摄像头", command=self.dress_up)
-        # self.dress_up_button.place(relx=0.7, rely=0.675, relwidth=0.25, relheight=0.1)
-        return  
-        self.cap = cv2.VideoCapture(0)
-        self.video_update()
-        
-        while True:
-            # _, frame = self.cap.read()
-            # detected = self.detector(frame)
-            # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
-            # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
-            # photo = ImageTk.PhotoImage(frame)
-            # self.image_label.configure(image=photo)
-            # self.image_label.image = photo
-            # cv2.imshow('frame', frame)
-            self.video_update()
-            key = cv2.waitKey(1)
-            if key == 27:
-                break
-        self.cap.release()
-        cv2.destroyAllWindows()
-        # while True:
-        #     _,frame=cap.read()
-        #     detected = detector(frame)
-        #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
-        #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
-        #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        #     img = Image.fromarray(cov)
-        #     img = ImageTk.PhotoImage(img)
-        #     canvas.create_image(0,0,image=img)
-            
-        #     # key=cv2.waitKey(1)
-        #     # if key == 27:
-        #     #     break
-        # cap.release()
-        # cv2.destroyAllWindows()
-        
-    def video_update(self):
-        return
-        ret, frame = self.cap.read()
-        if not ret:
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            return
-        # 人脸识别
-        detected = self.detector(frame)
-        mouth_range = self.landmarks['mouth']
-        frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
-        frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
-        # 将摄像头画面转换为PIL图像
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = Image.fromarray(frame)
-        # 缩放图像以适应窗口
-        frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
-        # 将PIL图像转换为PhotoImage对象
-        photoimage = ImageTk.PhotoImage(frame)
-        # 更新Label的图像
-        self.video_label.configure(image=photoimage)
-        self.video_label.image = photoimage
-        # 每隔100毫秒更新一次画面
-        self.after(100, self.video_update)
-    
-    def dress_up(self):
-        return
+        self.video_capture_label = tk.Label(virtual_try_on_window, text="摄像头位置", borderwidth = 3, relief="sunken")
+        self.video_capture_label.place(relx=0.05, rely=0.35, relwidth=0.9, relheight=0.6)
 
     def quit_app(self):
         exit()
