@@ -101,9 +101,16 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.19 version 1.3.5
+
+**Goals (v1.3.5)**
+
+    1.Several Functions in GUI: Display the color of recommended (with the support of last or next recommended item in the list).
+    2.UI (Design the Button and Frame for the Function of VideoCapture and Dressed-Up which will be done in the future).
+
 #### 2025.12.18 version 1.3.4
 
-**Goals (v1.3.3b)**
+**Goals (v1.3.4)**
 
     1.(Optimize) UI.
     2.Two Functions in GUI: Recommendation (Scrollbox to display the recommendation) and Clear.
