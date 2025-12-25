@@ -53,7 +53,7 @@ from utils.recommend import recommendation
 
 import cv2
 import dlib
-import numpy as np
+import time
 import pandas as pd
 from collections import OrderedDict
 import videocapture
@@ -471,8 +471,7 @@ class App:
             self.current_recommend_index = (self.current_recommend_index + 1 + self.real_recommend_count) % self.real_recommend_count
             virtual_try_on_display_color()    
             
-        def video_update(self):
-            return
+        def video_update():
             ret, frame = self.cap.read()
             if not ret:
                 self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -486,54 +485,36 @@ class App:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = Image.fromarray(frame)
             # 缩放图像以适应窗口
-            frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
+            # frame = frame.resize((800, 600), Image.Resampling.LANCZOS)
             # 将PIL图像转换为PhotoImage对象
             photoimage = ImageTk.PhotoImage(frame)
             # 更新Label的图像
-            self.video_label.configure(image=photoimage)
-            self.video_label.image = photoimage
-            # 每隔100毫秒更新一次画面
-            self.after(100, self.video_update)
+            self.video_capture_label.configure(image=photoimage)
+            self.video_capture_label.image = photoimage
+            # 每隔15毫秒更新一次画面
+            self.video_capture_label.after(15, video_update)
             
-        def launch_video_capture(self):
-            # self.release_video_capture_button = tk.Button(master, text="关闭摄像头", command=release_video_capture)
-            # self.release_video_capture_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
-            return  
+        def launch_video_capture():
+            
+            def close_video_capture():
+                self.cap.release()
+                
+                self.launch_video_capture_button = tk.Button(virtual_try_on_window, text="打开摄像头", command=launch_video_capture)
+                self.launch_video_capture_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
+                
+                self.video_capture_label = tk.Label(virtual_try_on_window, text="摄像头位置", borderwidth = 3, relief="sunken")
+                self.video_capture_label.place(relx=0.05, rely=0.35, relwidth=0.9, relheight=0.6)
+                
+                
+            self.release_video_capture_button = tk.Button(virtual_try_on_window, text="关闭摄像头", command=close_video_capture)
+            self.release_video_capture_button.place(relx=0.4, rely=0.175, relwidth=0.25, relheight=0.1)
+            
             self.cap = cv2.VideoCapture(0)
-            self.video_update()
             
-            while True:
-                # _, frame = self.cap.read()
-                # detected = self.detector(frame)
-                # frame = videocapture.drawRectangle(detected, frame, self.criticPoints, mouth_range)
-                # frame = videocapture.drawCriticPoints(detected, frame, self.criticPoints, self.landmarks, mouth_range)
-                # photo = ImageTk.PhotoImage(frame)
-                # self.image_label.configure(image=photo)
-                # self.image_label.image = photo
-                # cv2.imshow('frame', frame)
-                self.video_update()
-                key = cv2.waitKey(1)
-                if key == 27:
-                    break
-            self.cap.release()
-            cv2.destroyAllWindows()
-            # while True:
-            #     _,frame=cap.read()
-            #     detected = detector(frame)
-            #     frame = videocapture.drawRectangle(detected, frame, criticPoints, mouth_range)
-            #     frame = videocapture.drawCriticPoints(detected, frame, criticPoints, landmarks, mouth_range)
-            #     cov = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            #     img = Image.fromarray(cov)
-            #     img = ImageTk.PhotoImage(img)
-            #     canvas.create_image(0,0,image=img)
+            video_update()
+            virtual_try_on_window.mainloop
                 
-            #     # key=cv2.waitKey(1)
-            #     # if key == 27:
-            #     #     break
-            # cap.release()
-            # cv2.destroyAllWindows()
-                
-        def dress_up(self):
+        def dress_up():
             return
         
         self.current_recommend_item_label = tk.Label(virtual_try_on_window, text="", borderwidth = 3, relief="sunken")
