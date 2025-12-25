@@ -101,6 +101,13 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.25 version 1.3.6
+
+**Goals (v1.3.6)**
+
+    1.Two Functions in GUI: Launch or Release Video Capture manually (with a frame to detect user's face and marked out user's mouth).
+    2.UI (Design the Button and Frame for the Function of VideoCapture and Dressed-Up which will be done in the future).
+
 #### 2025.12.19 version 1.3.5
 
 **Goals (v1.3.5)**
