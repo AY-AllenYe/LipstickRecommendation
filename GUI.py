@@ -119,6 +119,27 @@ class App:
         # Rotate the image
         self.rotate_angle = 0
         
+        # Display and Modify the color
+        self.set_fetched_bool = False # false 未提取， true 已提取
+        self.set_modified_bool = False # false 未修改， true 已修改
+        self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
+        self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
+        self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
+                
+        # Set Recommendation Numbers
+        self.recommend_numbers = 10
+        self.real_recommend_count = 0
+        
+        # Recommendation
+        self.cluster_file = 'datasets/lipstick_clusters.csv'
+        self.recommendation_model_path = 'models/saves/best_train_acc_model.pkl'
+        num_classes = 5
+        self.recommendation_model = get_model(num_classes=num_classes)
+        self.recommendation_model.load_state_dict(jt.load(self.recommendation_model_path))
+        self.lipstick_recommend_list = []
+        self.historically_saved_dir = 'history_save'
+        self.set_recommendation_bool = False # false 未识别与推荐， true 已推荐
+        
         # Video Capture
         self.cap = None
         self.video_capture_landmarks = 'models/pretrained/shape_predictor_68_face_landmarks.dat'
@@ -133,29 +154,6 @@ class App:
             ('nose',(27,36)),
             ('jaw',(0,17))
         ])
-        
-        # Set Recommendation Numbers
-        self.recommend_numbers = 10
-        self.real_recommend_count = 0
-        
-        # Recommendation
-        self.cluster_file = 'datasets/lipstick_clusters.csv'
-        self.recommendation_model_path = 'models/saves/best_train_acc_model.pkl'
-        num_classes = 5
-        self.recommendation_model = get_model(num_classes=num_classes)
-        self.recommendation_model.load_state_dict(jt.load(self.recommendation_model_path))
-        # self.recommendation_model.eval()
-        
-        self.lipstick_recommend_list = []
-        self.historically_saved_dir = 'history_save'
-        self.set_recommendation_bool = False # false 未识别与推荐， true 已推荐
-
-        # Display and Modify the color
-        self.set_fetched_bool = False # false 未提取， true 已提取
-        self.set_modified_bool = False # false 未修改， true 已修改
-        self.fetched_R, self.fetched_G, self.fetched_B = 0, 0, 0
-        self.modified_R, self.modified_G, self.modified_B = self.fetched_R, self.fetched_G, self.fetched_B
-        self.last_modified_R, self.last_modified_G, self.last_modified_B = self.modified_R, self.modified_G, self.modified_B
     
     def open_image(self):
         App.__init__(self, self.master)
