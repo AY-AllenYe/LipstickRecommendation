@@ -546,4 +546,3 @@ pygame.init()
 root = tk.Tk()
 app = App(root)
 root.mainloop()
-
