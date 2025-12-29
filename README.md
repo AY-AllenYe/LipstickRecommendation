@@ -101,6 +101,27 @@ and others.
 
 ### Updated Logs
 
+#### 2025.12.29
+
+**Info**
+
+    The application is partly done. The author will not update as frequently as this month, but will not abandon this project in the future.
+
+
+**TODO**
+    
+    Basic functions:
+        1.Function: Recognize image user updated, and fetch the color automatically. However I haven't decided to rule the updated images(Lipsticks? Portrait? or others?)
+        2.Function: Better method of recommendation and list recommended items' information of its online shopping website.
+        3.Function: Virtual dress-on on the real-time video capture of human face. 
+    Moreover, Same as **TODO(v1.0.0)**:
+        1.More datasets.(By fetching from some online shops, TaoBao and Amazon etc.)
+        2.More dimension of datasets.(Not just colors, but also other attributes, glossiness and moisture etc.)
+        3.Re-determine the Cluster by new-updated datasets.
+        4.Find more proper and intelligent algorithm of classification.
+        5.Find mor accurate models or nets to train.
+        6.UI and repository, which can easily interact.
+
 #### 2025.12.25 version 1.3.6
 
 **Goals (v1.3.6)**
